@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "QtLine.h"
 #include "QtBox.h"
-
+#include <vector>
 
 
 /*
@@ -100,6 +100,38 @@ void QtLine::redraw(CClientDC & dc, bool selected, CPoint framePos) {
 	}
 	else {
 		//////////////////저절로 꺾이는
+		CPoint dirStart = getDirection(m_relStart);
+		CPoint dirEnd = getDirection(m_relEnd);
+
+		std::vector<CPoint> trace; //그릴 벡터들, start->end여야함
+		trace.push_back(dirStart);
+
+		/*중간 점 구하기*/
+		CPoint moveVec = posEnd + dirEnd - (posStart + dirStart);
+		//같은 direction이 있으면 우선권주기
+		if (dirStart.x * moveVec.x >= 0 && dirStart.y * moveVec.y >= 0) {
+			//1. Start에 우선권
+		}
+		else if (dirEnd.x * moveVec.x >= 0 && dirEnd.y * moveVec.y >= 0) {
+			//2. End에 우선권
+		}
+		else {
+			//3. 둘다 옆방향으로
+			CPoint moveVec_v = CPoint(dirStart.y / dirStart.y * moveVec.x, dirStart.x / dirStart.x * moveVec.y); //dirStart의 방향에서 꺾은 쪽의 moveVec 방향
+			CPoint moveVec_v_half = CPoint(moveVec_v.x / 2, moveVec_v.y / 2);
+
+			CPoint moveVec_p = moveVec - moveVec_v;
+
+			trace.push_back(moveVec_v_half);
+			trace.push_back(moveVec_p);
+			trace.push_back(moveVec_v_half);
+
+		}
+
+
+		trace.push_back(dirEnd);
+
+		//1. 가로,세로 사이즈 5pixel 미만의 상자
 		
 	}
 

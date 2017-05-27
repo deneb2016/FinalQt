@@ -33,11 +33,12 @@ int QtShape::nearPoint(CPoint pos1, CPoint pos2) {
 	else return -1;
 }
 
-int QtShape::getDirection(CPoint relPos) {
-	if (relPos.x == 100) return 0;
-	else if (relPos.x == 0) return 2;
-	else if (relPos.y == 100) return 1;
-	else if (relPos.y == 0) return 3;
+CPoint QtShape::getDirection(CPoint relPos) {
+	int pl = 5;//pixel length
+	if (relPos.x == 100) return CPoint{ pl,0 };
+	else if (relPos.x == 0) return CPoint{ -pl,0 };
+	else if (relPos.y == 100) return CPoint{ 0,pl };
+	else if (relPos.y == 0) return { 0,-pl };
 	else return -1;
 }
 bool QtShape::inRect(CPoint lu, CPoint rd, CPoint pos) {
