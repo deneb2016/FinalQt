@@ -144,14 +144,15 @@ void CFinalQtDoc::Dump(CDumpContext& dc) const
 #include "QtLine.h"
 #include "QtBox.h"
 using namespace std;
-void CFinalQtDoc::createBox(CString name, CString attribute, CString operation, CPoint pt)
+void CFinalQtDoc::createBox(CPoint pt, int steroType, CString name, CString attribute, CString operation)
 {
-
+	QtBox* newBox = new QtBox(pt, steroType, name, attribute, operation);
+	boxList.push_back(newBox);
+	//boxHash.insert(newBox.getKey(), newBox);
 }
 
 void CFinalQtDoc::createLine(CPoint pt, int lineType, int lineShape)
 {
-
 }
 
 void CFinalQtDoc::deleteObject(int key)

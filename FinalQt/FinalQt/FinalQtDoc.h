@@ -19,7 +19,7 @@ private:
 	std::unordered_map<int, QtLine*> lineHash;
 
 public:
-	void createBox(CString name, CString attribute, CString operation, CPoint pt);
+	void createBox(CPoint pt, int steroType, CString name, CString attribute, CString operation);
 	void createLine(CPoint pt, int lineType, int lineShape);
 	void deleteObject(int key);
 	int find(CPoint pt);
