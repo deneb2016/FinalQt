@@ -87,7 +87,7 @@ bool QtBox::selectArea(CPoint lu, CPoint rd) { //lu, rd로 되어있는 직사각형 안에
 	bool in3 = inRect(lu, rd, m_lu);
 	bool in4 = inRect(lu, rd, m_rd);
 
-	return (in1 | in2 | in3 | in4);
+	return (in1 && in2 && in3 && in4);
 }
 void QtBox::setStereotype(int stereotype) {
 	m_stereotype = stereotype;
