@@ -62,6 +62,7 @@ public:
 	int m_lastSelectObj;
 	void pushKey(int key);
 	bool hasKey(int key);
+	int m_changeLine;
 };
 
 #ifndef _DEBUG  // FinalQtView.cpp의 디버그 버전

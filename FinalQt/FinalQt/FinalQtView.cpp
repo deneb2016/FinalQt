@@ -19,7 +19,7 @@
 #define new DEBUG_NEW
 #endif
 
-enum {QT_DEFAULT, QT_CREATE_CLASS, QT_CREATE_RELATION, QT_MOVE_CLASS, QT_MOVE_RELATION, QT_MOUSELDOWN, QT_MOVE_SHAPE, QT_SELECT_MANY, QT_MOVE_ALLSHAPE, QT_SPACECLICK, QT_CREATE_RELATION_CLICKED
+enum {QT_DEFAULT, QT_CREATE_CLASS, QT_CREATE_RELATION, QT_MOVE_CLASS, QT_MOVE_RELATION, QT_MOUSELDOWN, QT_MOVE_SHAPE, QT_SELECT_MANY, QT_MOVE_ALLSHAPE, QT_SPACECLICK, QT_CREATE_RELATION_CLICKED, QT_LINE_MODIFY
 }qt_flgtyp;
 // CFinalQtView
 
@@ -50,6 +50,7 @@ CFinalQtView::CFinalQtView()
 	, m_ptS(0)
 	, m_prevPt(0)
 	, m_lastSelectObj(0)
+	, m_changeLine(0)
 {
 	// TODO: 여기에 생성 코드를 추가합니다.
 
@@ -161,7 +162,10 @@ void CFinalQtView::OnCreatbox()
 		strClassName.Format(_T("%s"), dlg.m_ClassName);
 		strAttribute.Format(_T("%s"), dlg.m_Attribute);
 		strOperation.Format(_T("%s"), dlg.m_Operation);
-		int f = dlg.cIndex;
+		int tmp[3] = { ST_UTILITY , ST_ABSTRACT, ST_INTERFACE };
+		int f = tmp[dlg.cIndex];
+
+		MessageBox(_T("%d",f));
 
 		CFinalQtDoc* pDoc = GetDocument();
 		ASSERT_VALID(pDoc);
@@ -172,7 +176,7 @@ void CFinalQtView::OnCreatbox()
 		GetClientRect(&rect);		
 		CPoint pt;
 		pt.SetPoint(rect.Width() / 2, rect.Height() / 2);
-		pDoc->createBox(pt, f+1, strClassName, strAttribute, strOperation);
+		pDoc->createBox(pt, f, strClassName, strAttribute, strOperation);
 		Invalidate();
 	}
 		//생성 취소
@@ -203,6 +207,7 @@ void CFinalQtView::OnCreateline2()
 
 void CFinalQtView::createLine(CPoint pt, int lineType, int lineShape)
 {
+	selectedObj_key.clear();
 	CFinalQtDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
@@ -232,6 +237,18 @@ void CFinalQtView::OnLButtonDown(UINT nFlags, CPoint point)
 		//else
 		if(m_lastSelectObj < 1)
 			m_flag = QT_SPACECLICK;
+		if (selectedObj_key.size() == 1)
+		{
+			
+			std::pair<int, int> lp = pDoc->isLinePoint(point);
+			if (lp.first != 0 && selectedObj_key[0] == lp.first)
+			{
+				m_changeLine = lp.second;
+				m_flag = QT_LINE_MODIFY;
+			}
+
+			/////////////
+		}
 		return;		
 	case QT_CREATE_RELATION:
 		m_prevPt = m_ptS = point;
@@ -257,17 +274,28 @@ void CFinalQtView::OnLButtonUp(UINT nFlags, CPoint point)
 	if (!pDoc)
 		return;
 	switch (m_flag) {
-	case QT_MOUSELDOWN:
+	case QT_MOUSELDOWN: //클릭 판단
 		if (!(nFlags & MK_CONTROL))//눌려있지 않으면 다 비운다.
 			selectedObj_key.clear();
 		pushKey(m_lastSelectObj);
 		m_flag = QT_DEFAULT;
 		Invalidate();
+		m_flag = QT_DEFAULT;
 		break;
 	case QT_SPACECLICK:
 		selectedObj_key.clear();
 		Invalidate();
+		m_flag = QT_DEFAULT;
+		break;
 	case QT_CREATE_RELATION_CLICKED:
+		pDoc->moveLine(key_createRelation, point, TO);
+		selectedObj_key.push_back(key_createRelation);
+		Invalidate();
+		m_flag = QT_DEFAULT;
+		break;
+	case QT_LINE_MODIFY:
+		pDoc->moveLine(m_lastSelectObj, point, m_changeLine);
+		Invalidate();
 		m_flag = QT_DEFAULT;
 		break;
 	default :
@@ -302,6 +330,10 @@ void CFinalQtView::OnMouseMove(UINT nFlags, CPoint point)
 	case QT_MOVE_ALLSHAPE:
 		pDoc->moveObjects(point - m_prevPt, selectedObj_key);
 		m_prevPt = point;
+		Invalidate();
+		break;
+	case QT_LINE_MODIFY:
+		pDoc->moveLine(m_lastSelectObj, point, m_changeLine);
 		Invalidate();
 		break;
 	case QT_MOUSELDOWN:

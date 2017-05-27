@@ -60,7 +60,7 @@ BOOL CClassEditDlg::OnInitDialog()
 	m_comboInput.AddString(_T("Utility"));
 	m_comboInput.AddString(_T("Abstract"));
 	m_comboInput.AddString(_T("Interface"));
-	cIndex = 0;
+	cIndex = 2;
 	m_comboInput.SetCurSel(cIndex);
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
