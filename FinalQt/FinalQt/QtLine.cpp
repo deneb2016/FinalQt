@@ -23,6 +23,7 @@ QtLine::QtLine(QtBox* startBox, CPoint relStart, int relation, bool diagonal) {
 		m_relStart = { -1,-1 };
 		m_relEnd = { -1,-1 };
 		m_absStart = relStart;
+		m_absEnd = relStart;
 	}
 	else {
 		// 어떤 박스위에 있는지, 상대좌표를 받아서 StartPoint 지정, EndPoint는 처음에는 해당 없음
