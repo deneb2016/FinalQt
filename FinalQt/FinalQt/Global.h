@@ -1,12 +1,13 @@
 #pragma once
-#define STRAIGHT 0
-#define SQUARE 1
+#define STRAIGHT 1
+#define SQUARE 0
 #define BOX 1
 #define LINE 2
 #define FROM 3
 #define TO 4
 #define INH 1
 #define DEP 3
+#define PIX 10
 
 /*QtBox¿« m_stereotype*/
 #define ST_UTILITY 1 //±‚∫ª

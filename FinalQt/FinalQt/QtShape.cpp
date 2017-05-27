@@ -26,7 +26,7 @@ int QtShape::nearPoint(CPoint pos1, CPoint pos2) {
 	int dx = abs(pos1.x - pos2.x);
 	int dy = abs(pos1.y - pos2.y);
 
-	if (abs(pos1.x - pos2.x) <= 2 && abs(pos1.y - pos2.y) <= 2) //+-2pixel 이내에 있으면
+	if (abs(pos1.x - pos2.x) <= PIX && abs(pos1.y - pos2.y) <= PIX) //+-2pixel 이내에 있으면
 		return dx + dy; // 0~4, 작을수록 근접
 	else return -1;
 }
