@@ -32,7 +32,7 @@ int QtShape::nearPoint(CPoint pos1, CPoint pos2) {
 }
 
 CPoint QtShape::getDirection(CPoint relPos) {
-	int pl = 5;//pixel length
+	int pl = 8;//pixel length
 	if (relPos.x == 100) return CPoint{ pl,0 };
 	else if (relPos.x == 0) return CPoint{ -pl,0 };
 	else if (relPos.y == 100) return CPoint{ 0,pl };

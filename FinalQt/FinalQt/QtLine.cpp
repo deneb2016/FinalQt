@@ -113,11 +113,7 @@ void QtLine::redraw(CClientDC & dc, bool selected) {
 	CPoint posEnd = m_absEnd;
 	CPoint posStart = m_absStart;
 	/*1. 선그리기*/
-	if (m_diagonal == true) {
-		dc.MoveTo(m_absStart);
-		dc.LineTo(m_absEnd);
-	}
-	else {
+	if (m_diagonal == false) {
 		//저절로 꺾이는
 		CPoint dirStart = getDirection(m_relStart);
 		CPoint dirEnd = getDirection(m_relEnd);
@@ -180,20 +176,40 @@ void QtLine::redraw(CClientDC & dc, bool selected) {
 
 	}
 
+	if (m_diagonal == true) {
+		if (m_relation == 1 || m_relation == 2) { //삼각형화살표
+			CPoint dirEnd = getDirection(m_relEnd);
+			CPoint tp1 = posEnd;
+			CPoint tp2 = posEnd + dirEnd + CPoint(dirEnd.y / 2, dirEnd.x / 2);
+			CPoint tp3 = posEnd + dirEnd - CPoint(dirEnd.y / 2, dirEnd.x / 2);
+			dc.MoveTo(tp1);
+			dc.LineTo(tp2);
+			dc.MoveTo(tp2);
+			dc.LineTo(tp3);
+			dc.MoveTo(tp3);
+			dc.LineTo(tp1);
 
-	/*2. 화살표캡 그리기*/
-	int arrayStyle = 0;
-	if (m_relation == 1 || m_relation == 2) arrayStyle = 1;//검은원점
-	else if (m_relation == 3) arrayStyle = 2; //빈 원점
+			dc.MoveTo(m_absStart);
+			dc.LineTo(posEnd + dirEnd);
+		}
+		else if (m_relation == 4) { //x
+			dc.MoveTo(m_absStart);
+			dc.LineTo(m_absEnd);
+		}
+		else if (m_relation == 3) { //화살화살표
 
-	if (arrayStyle != 0) {
-		COLORREF arrayColor;
-		if (arrayStyle == 1) arrayColor = RGB(0, 0, 0);
-		else arrayColor = RGB(255, 255, 255);
+			CPoint dirEnd = getDirection(m_relEnd);
+			CPoint tp1 = posEnd;
+			CPoint tp2 = posEnd + dirEnd + CPoint(dirEnd.y / 2, dirEnd.x / 2);
+			CPoint tp3 = posEnd + dirEnd - CPoint(dirEnd.y / 2, dirEnd.x / 2);
+			dc.MoveTo(tp1);
+			dc.LineTo(tp2);
+			dc.MoveTo(tp3);
+			dc.LineTo(tp1);
 
-		CBrush MyBrush(arrayColor);
-		dc.SelectObject(&MyBrush);
-		dc.Ellipse(posEnd.x - 1, posEnd.y - 1, posEnd.x + 1, posEnd.y + 1);
+			dc.MoveTo(m_absStart);
+			dc.LineTo(m_absEnd);
+		}
 	}
 
 }
