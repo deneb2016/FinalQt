@@ -50,7 +50,6 @@ public:
 	CString strAttribute;
 	CString strOperation;
 	afx_msg void OnCreaterelation();
-	afx_msg void On32778();
 	afx_msg void OnCreateline1();
 	afx_msg void OnCreateline2();
 	void createLine(CPoint pt, int lineType, int lineShape);
