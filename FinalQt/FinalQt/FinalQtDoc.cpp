@@ -63,7 +63,7 @@ void CFinalQtDoc::Serialize(CArchive& ar)
 	if (ar.IsStoring())
 	{
 		// TODO: 여기에 저장 코드를 추가합니다.
-		ar << QtShape::nextKey << boxList.size() << lineList.size();
+		ar << QtShape::nextKey << (int)boxList.size() << (int)lineList.size();
 		for (int i = 0; i < boxList.size(); ++i)
 		{
 			boxList[i]->save(ar);
