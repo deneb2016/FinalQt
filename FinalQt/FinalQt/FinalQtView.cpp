@@ -19,7 +19,7 @@
 #define new DEBUG_NEW
 #endif
 
-enum {QT_DEFAULT, QT_CREATE_CLASS, QT_CREATE_RELATION, QT_MOVE_CLASS, QT_MOVE_RELATION, QT_MOUSELDOWN, QT_MOVE_SHAPE, QT_SELECT_MANY, QT_MOVE_ALLSHAPE
+enum {QT_DEFAULT, QT_CREATE_CLASS, QT_CREATE_RELATION, QT_MOVE_CLASS, QT_MOVE_RELATION, QT_MOUSELDOWN, QT_MOVE_SHAPE, QT_SELECT_MANY, QT_MOVE_ALLSHAPE, QT_SPACECLICK
 }qt_flgtyp;
 // CFinalQtView
 
@@ -210,7 +210,6 @@ void CFinalQtView::createLine(CPoint pt, int lineType, int lineShape)
 	key_createRelation = pDoc->createLine(pt, lineType, lineShape);
 }
 
-
 void CFinalQtView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
@@ -224,18 +223,15 @@ void CFinalQtView::OnLButtonDown(UINT nFlags, CPoint point)
 		m_prevPt = m_ptS = point;
 		m_flag = QT_MOUSELDOWN;
 		m_lastSelectObj = pDoc->find(point);
-		if (m_lastSelectObj)
+		/*if (m_lastSelectObj)
 		{
-			bool isInkey = false;
-			for(auto x : selectedObj_key)
-				if (x == m_lastSelectObj)
-				{
-					isInkey = true;
-					break;
-				}
-			if (isInkey == false)
-				selectedObj_key.push_back(m_lastSelectObj);
-		}
+			if (hasKey(m_lastSelectObj))
+				selectedObj_key.clear();
+			pushKey(m_lastSelectObj);
+		}*/
+		//else
+		if(m_lastSelectObj < 1)
+			m_flag = QT_SPACECLICK;
 		return;		
 	case QT_CREATE_RELATION:
 		createLine(point, m_lineType, m_relationType);
@@ -253,13 +249,24 @@ void CFinalQtView::OnLButtonDown(UINT nFlags, CPoint point)
 void CFinalQtView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	m_flag = QT_DEFAULT;
 	CFinalQtDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
-	CClientDC dc(this);
-	Invalidate();
+	switch (m_flag) {
+	case QT_MOUSELDOWN:
+		if (!(nFlags & MK_CONTROL))//눌려있지 않으면 다 비운다.
+			selectedObj_key.clear();
+		pushKey(m_lastSelectObj);
+		m_flag = QT_DEFAULT;
+		Invalidate();
+		break;
+	case QT_SPACECLICK:
+		selectedObj_key.clear();
+		Invalidate();
+	default :
+		m_flag = QT_DEFAULT;
+	}
 	CView::OnLButtonUp(nFlags, point);
 }
 
@@ -288,6 +295,7 @@ void CFinalQtView::OnMouseMove(UINT nFlags, CPoint point)
 		break;
 	case QT_MOVE_ALLSHAPE:
 		pDoc->moveObjects(point - m_prevPt, selectedObj_key);
+		m_prevPt = point;
 		Invalidate();
 		break;
 	case QT_MOUSELDOWN:
@@ -296,6 +304,18 @@ void CFinalQtView::OnMouseMove(UINT nFlags, CPoint point)
 		int d = cp.x*cp.x + cp.y*cp.y;
 		if (d > 5)
 		{
+			//어쨌든 지금 선택한 도형이 ctrl이 안눌려있으면 현재꺼만 남아야 함
+		/*	if (!(nFlags & MK_CONTROL))
+			{
+				selectedObj_key.clear();
+				selectedObj_key.push_back(m_lastSelectObj);
+			}*/
+			if (!hasKey(m_lastSelectObj)) //마지막에 선택한 아이가 아직 포함 안된 아이면
+			{
+				if(!(nFlags & MK_CONTROL)) //컨트롤이 안눌려있으면 다 비운다
+					selectedObj_key.clear();
+				selectedObj_key.push_back(m_lastSelectObj);
+			}
 			if (selectedObj_key.size() > 1)
 				m_flag = QT_MOVE_ALLSHAPE;
 			else if (selectedObj_key.size() == 1)
@@ -339,3 +359,25 @@ void CFinalQtView::OnMouseMove(UINT nFlags, CPoint point)
 //		//범위 선택이면 범위 선택 함수 호출 후 선택된 도형을 업데이트 한다.
 //	}
 //}
+
+void CFinalQtView::pushKey(int key)
+{
+	bool isInkey = false;
+	for (auto x : selectedObj_key)
+		if (x == key)
+		{
+			isInkey = true;
+			break;
+		}
+	if (isInkey == false)
+		selectedObj_key.push_back(key);
+}
+
+
+bool CFinalQtView::hasKey(int key)
+{
+	for (auto x : selectedObj_key)
+		if (key == x)
+			return true;
+	return false;
+}
