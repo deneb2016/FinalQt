@@ -106,14 +106,36 @@ void QtLine::redraw(CClientDC & dc, bool selected, CPoint framePos) {
 		std::vector<CPoint> trace; //그릴 벡터들, start->end여야함
 		trace.push_back(dirStart);
 
-		/*중간 점 구하기*/
 		CPoint moveVec = posEnd + dirEnd - (posStart + dirStart);
 		//같은 direction이 있으면 우선권주기
-		if (dirStart.x * moveVec.x >= 0 && dirStart.y * moveVec.y >= 0) {
-			//1. Start에 우선권
+		bool preS = (dirStart.x * moveVec.x >= 0 && dirStart.y * moveVec.y >= 0);
+		bool preE = (dirEnd.x * moveVec.x >= 0 && dirEnd.y * moveVec.y >= 0);
+		if (preS && preE) {
+			//0. Start, End 모두 우선권
+			CPoint moveVec_p = CPoint(dirStart.x / dirStart.x * moveVec.x, dirStart.y / dirStart.y * moveVec.y); //dirStart의 방향에서 꺾은 쪽의 moveVec 방향
+			CPoint moveVec_p_half = CPoint(moveVec_p.x / 2, moveVec_p.y / 2);
+
+			CPoint moveVec_v = moveVec - moveVec_p;
+
+			trace.push_back(moveVec_p_half);
+			trace.push_back(moveVec_v);
+			trace.push_back(moveVec_p_half);
+
 		}
-		else if (dirEnd.x * moveVec.x >= 0 && dirEnd.y * moveVec.y >= 0) {
+		else if (preS) {
+			//1. Start에 우선권
+			CPoint moveVec_p = CPoint(dirStart.x / dirStart.x * moveVec.x, dirStart.y / dirStart.y * moveVec.y); //dirStart의 방향과 같은 direction
+			CPoint moveVec_v = moveVec - moveVec_p;
+			trace.push_back(moveVec_p);
+			trace.push_back(moveVec_v);
+			
+		}
+		else if (preE) {
 			//2. End에 우선권
+			CPoint moveVec_p = CPoint(dirStart.x / dirStart.x * moveVec.x, dirStart.y / dirStart.y * moveVec.y); //dirStart의 방향과 같은 direction
+			CPoint moveVec_v = moveVec - moveVec_p;
+			trace.push_back(moveVec_p);
+			trace.push_back(moveVec_v);
 		}
 		else {
 			//3. 둘다 옆방향으로
@@ -127,11 +149,15 @@ void QtLine::redraw(CClientDC & dc, bool selected, CPoint framePos) {
 			trace.push_back(moveVec_v_half);
 
 		}
-
-
 		trace.push_back(dirEnd);
+		/*구한 trace 그리기*/
 
-		//1. 가로,세로 사이즈 5pixel 미만의 상자
+		CPoint v = posStart;
+		for(auto& w:trace){
+			dc.MoveTo(v);
+			dc.LineTo(v+w);
+			v = v + w;
+		}
 		
 	}
 
@@ -151,8 +177,6 @@ void QtLine::redraw(CClientDC & dc, bool selected, CPoint framePos) {
 		dc.Ellipse(posEnd.x - 1, posEnd.y - 1, posEnd.x + 1, posEnd.y + 1);
 	}
 	
-
-
 }
 
 void QtLine::move(CPoint vec) {
