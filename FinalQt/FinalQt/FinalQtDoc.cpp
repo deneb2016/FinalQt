@@ -143,12 +143,13 @@ void CFinalQtDoc::Dump(CDumpContext& dc) const
 #include "QtShape.h"
 #include "QtLine.h"
 #include "QtBox.h"
+#include <algorithm>
 using namespace std;
 void CFinalQtDoc::createBox(CPoint pt, int steroType, CString name, CString attribute, CString operation)
 {
-	QtBox* newBox = new QtBox(pt, steroType, name, attribute, operation);
-	boxList.push_back(newBox);
-	//boxHash.insert(newBox.getKey(), newBox);
+	QtShape* newBox = new QtBox(pt, steroType, name, attribute, operation);
+	boxList.push_back((QtBox*)newBox);
+	boxHash[newBox->getKey()] =  (QtBox*)newBox;
 }
 
 void CFinalQtDoc::createLine(CPoint pt, int lineType, int lineShape)
@@ -157,33 +158,85 @@ void CFinalQtDoc::createLine(CPoint pt, int lineType, int lineShape)
 
 void CFinalQtDoc::deleteObject(int key)
 {
-
+	QtShape* target = NULL;
+	if (boxHash.find(key) != boxHash.end())
+	{
+		boxHash.erase(key);
+		for (auto iter = boxList.begin(); iter != boxList.end(); ++iter)
+		{
+			target = *iter;
+			if (target->getKey() == key) {
+				boxList.erase(iter);
+				break;
+			}
+		}
+	}
+	else if (lineHash.find(key) != lineHash.end())
+	{
+		lineHash.erase(key);
+		for (auto iter = lineList.begin(); iter != lineList.end(); ++iter)
+		{
+			target = *iter;
+			if (target->getKey() == key) {
+				lineList.erase(iter);
+				break;
+			}
+		}
+	}
+	else {
+		abort();
+	}
 }
 
 int CFinalQtDoc::find(CPoint pt)
 {
+	for (int i = lineList.size(); i >= 0; --i) {
+		QtShape* here = lineList[i];
+		if (here->select(pt))
+			return here->getKey();
+	}
+	for (int i = boxList.size(); i >= 0; --i) {
+		QtShape* here = boxList[i];
+		if (here->select(pt))
+			return here->getKey();
+	}
 	return 0;
-
 }
-void CFinalQtDoc::redrawAllObj(const CClientDC& dc, std::vector<int> selected)
+void CFinalQtDoc::redrawAllObj(CClientDC& dc, std::vector<int> selected)
 {
-
+	sort(selected.begin(), selected.end());
+	for (int i = 0; i < boxList.size(); ++i)
+	{
+		QtShape* here = boxList[i];
+		bool flag = binary_search(selected.begin(), selected.end(), here->getKey());
+		here->redraw(dc, flag);
+	}
+	for (int i = 0; i < lineList.size(); ++i)
+	{
+		QtShape* here = lineList[i];
+		bool flag = binary_search(selected.begin(), selected.end(), here->getKey());
+		here->redraw(dc, flag);
+	}
 }
 int CFinalQtDoc::getShapeType(int key) 
 {
-	int ret = -1;
-	return ret;
+	if (lineHash.find(key) != lineHash.end())
+		return LINE;
+	if (boxHash.find(key) != boxHash.end())
+		return BOX;
+	return 0;
 }
 vector<CString> CFinalQtDoc::getBoxInfo(int key)
 {
 	vector<CString> ret;
+	QtBox* here = 0;
+	auto iter = boxHash.find(key);
+	if (iter != boxHash.end())
+	{
+		here = iter->second;
+		//dddsf
+	}
 	return ret;
-
-}
-int CFinalQtDoc::getRectangle(CPoint pt)
-{
-	return 0;
-
 }
 void CFinalQtDoc::moveObjects(CPoint pt, std::vector<int> key)
 {
