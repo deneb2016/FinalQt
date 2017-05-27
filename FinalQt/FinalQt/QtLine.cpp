@@ -81,11 +81,45 @@ void QtLine::setRelStartPoint(QtBox* startBox, CPoint relStart) {
 
 void QtLine::redraw(CClientDC & dc, bool selected, CPoint framePos) {
 	// 자기자신 그리기, selected이면 강조(시작점 / 끝점에 큰 원 표시), 그리기 전에 상대좌표를 절대좌표로 바꿔주기
-	if (m_diagonal == true) {
-		//'화면상의 절대좌표'구하기
-		
+	
+	int penStyle = PS_NULL;
+	if (m_relation == 1 || m_relation == 4) penStyle = PS_SOLID;
+	if (m_relation == 2 || m_relation == 3) penStyle = PS_DASH;
+	CPen MyPen(penStyle, 1, RGB(0, 0, 0));
 
+	dc.SelectObject(&MyPen);
+
+	//'화면상의 절대좌표'구하기
+	CPoint posEnd = framePos + m_absEnd;
+	CPoint posStart = framePos + m_absStart;
+
+	/*1. 선그리기*/
+	if (m_diagonal == true) {
+		dc.MoveTo(posStart);
+		dc.LineTo(posEnd);
 	}
+	else {
+		//////////////////저절로 꺾이는
+		
+	}
+
+
+	/*2. 화살표캡 그리기*/
+	int arrayStyle = 0;
+	if (m_relation == 1 || m_relation == 2) arrayStyle = 1;//검은원점
+	else if (m_relation == 3) arrayStyle = 2; //빈 원점
+
+	if(arrayStyle != 0){
+		COLORREF arrayColor;
+		if (arrayStyle == 1) arrayColor = RGB(0, 0, 0);
+		else arrayColor = RGB(255, 255, 255);
+
+		CBrush MyBrush(arrayColor);
+		dc.SelectObject(&MyBrush);
+		dc.Ellipse(posEnd.x - 1, posEnd.y - 1, posEnd.x + 1, posEnd.y + 1);
+	}
+	
+
 
 }
 
