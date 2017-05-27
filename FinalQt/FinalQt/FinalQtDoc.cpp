@@ -432,3 +432,63 @@ void CFinalQtDoc::editLine(int key, int type, int shape) //라인의 속성을0 바꾼다
 		ret.second = line->m_diagonal;
 	}
 }
+
+
+std::vector<QtBox*> CFinalQtDoc::boxCopy;
+std::vector<QtLine*> CFinalQtDoc::lineCopy;
+#include <unordered_map>
+
+
+
+void CFinalQtDoc::copyObjects(vector<int> keys)
+{
+	
+	boxCopy.clear();
+	lineCopy.clear();
+	unordered_map<QtBox*, QtBox*> hsh;
+	for (int k : keys)
+	{
+		if (boxHash.find(k) != boxHash.end()) {
+			QtBox* box = boxHash[k];
+			CPoint center = box->m_lu + box->m_rd;
+			center.x /= 2;
+			center.y /= 2;
+			QtBox* newBox = new QtBox(center, box->m_stereotype, box->m_name, box->m_attribute, box->m_operation);
+			boxCopy.push_back(newBox);
+			hsh[box] = newBox;
+		}
+		else if (lineHash.find(k) != lineHash.end()) {
+			QtLine* line = lineHash[k];
+			QtBox* start = 0, *end = 0;
+			if (hsh.find(line->m_pboxStart) != hsh.end()) {
+				start = hsh[line->m_pboxStart];
+			}
+			if (hsh.find(line->m_pboxEnd) != hsh.end()) {
+				end = hsh[line->m_pboxEnd];
+			}
+
+			QtLine* newLine = new QtLine(start, line->m_relStart, line->m_relation, line->m_diagonal);
+			newLine->setRelEndPoint(end, line->m_relEnd);
+		}
+	}
+	
+}
+void CFinalQtDoc::pasteObjects()
+{
+	
+	vector<int> keys;
+
+	for (QtBox* box : boxCopy)
+	{
+		keys.push_back(box->key);
+		boxList.push_back(box);
+		boxHash[box->key] = box;
+	}
+	for (QtLine* line : lineCopy)
+	{
+		keys.push_back(line->key);
+		lineList.push_back(line);
+		lineHash[line->key] = line;
+	}
+	copyObjects(keys);
+}
