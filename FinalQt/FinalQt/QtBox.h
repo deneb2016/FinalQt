@@ -2,8 +2,8 @@
 
 #include "QtShape.h"
 class QtBox : public QtShape {
-private:
 	CPoint m_lu, m_rd; // Box의 위치와 크기를 지정하기 위한 Rectangle
+public:
 	int m_stereotype; // 클래스의 속성 정보, 0(utility, 기본), 1(abstract, 추상클래스), 2(interface, 인터페이스)
 	CString m_name;		// 클래스의 이름 정보
 	CString m_attribute; // 클래스의 변수 정보
