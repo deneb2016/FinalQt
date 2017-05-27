@@ -109,7 +109,7 @@ CPoint QtBox::edgeCheck(CPoint pos) {
 	if ((nearest.x >= 0) && (m_rd.y <= pos.y && pos.y <= m_lu.y)) {
 		nearest.y = pos.y;
 
-		CPoint p1 = m_lu - nearest;
+		CPoint p1 = nearest - m_lu;
 		CPoint p2 = m_rd - m_lu;
 
 		CPoint ret = CPoint((double)p1.x / (double)p2.x * 100, (double)p1.y / (double)p2.y * 100);
@@ -119,10 +119,10 @@ CPoint QtBox::edgeCheck(CPoint pos) {
 	if (abs(pos.y - m_rd.y) <= PIX) nearest.y = m_rd.y;
 	else if (abs(pos.y - m_lu.y) <= PIX) nearest.y = m_lu.y;
 
-	if ((nearest.y >= 0) && (m_rd.x <= pos.x && pos.x <= m_lu.x)) {
+	if ((nearest.y >= 0) && (m_lu.x <= pos.x && pos.x <= m_rd.x)) {
 		nearest.x = pos.x;
 
-		CPoint p1 = m_lu - nearest;
+		CPoint p1 = nearest - m_lu;
 		CPoint p2 = m_rd - m_lu;
 
 		CPoint ret = CPoint((double)p1.x / (double)p2.x * 100, (double)p1.y / (double)p2.y * 100);

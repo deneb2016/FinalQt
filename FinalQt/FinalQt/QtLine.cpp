@@ -216,8 +216,9 @@ bool QtLine::select(CPoint pos) { //해당 선분 위에 (+-1pixel) 마우스가 위치할때�
 			CPoint pV = pos - m_absStart; //part vector
 			CPoint wV = m_absEnd - m_absStart; //whole vector
 											   //partVect normalization
-			double wvL = sqrt(wV.x*wV.x + wV.y*wV.y);
-			CPoint dist = pV - CPoint((double)wV.x / wvL, (double)wV.y / wvL);
+			double wvL2 = wV.x*wV.x + wV.y*wV.y;
+			double ip = (double)pV.x * (double)wV.x + (double)pV.y * (double)wV.y; //내적
+			CPoint dist = pV - CPoint(wV.x*ip/wvL2, wV.y*ip / wvL2);
 			if (dist.x*dist.x + dist.y*dist.y < PIX*PIX) return 1;
 		}
 	}

@@ -14,7 +14,7 @@ CPoint QtShape::relativeToAbsolute(CPoint lu, CPoint rd, CPoint relPos) {
 	CPoint diff = rd - lu;
 	diff.x *= relPos.x / 100;
 	diff.y *= relPos.y / 100;
-	return diff;
+	return diff+lu;
 }
 
 int QtShape::getKey()
