@@ -4,9 +4,9 @@
 class QtShape
 {
 protected:
-	int key;
 public:
 	static int nextKey;
+	int key;
 public:
 	QtShape();
 

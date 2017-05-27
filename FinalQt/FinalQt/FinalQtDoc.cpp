@@ -76,12 +76,14 @@ void CFinalQtDoc::Serialize(CArchive& ar)
 	else
 	{
 		// TODO: 여기에 로딩 코드를 추가합니다.
-		int bc, nc;
-		ar >> QtShape::nextKey >> bc >> nc;
+		int bc, nc, nk;
+		ar >> nk >> bc >> nc;
+		
 		for (int i = 0; i < bc; ++i)
 		{
 			QtBox* box = new QtBox();
 			box->load(ar);
+			box->key += QtShape::nextKey;
 			boxList.push_back(box);
 			boxHash[box->getKey()] = box;
 		}
@@ -89,11 +91,14 @@ void CFinalQtDoc::Serialize(CArchive& ar)
 		{
 			QtLine* line = new QtLine();
 			line->load(ar);
+			line->m_pboxStart += QtShape::nextKey;
+			line->m_pboxEnd += QtShape::nextKey;
 			line->m_pboxStart = boxHash[(int)(line->m_pboxStart)];
 			line->m_pboxEnd = boxHash[(int)(line->m_pboxEnd)];
 			lineList.push_back(line);
 			lineHash[line->getKey()] = line;
 		}
+		QtShape::nextKey += nk;
 	}
 }
 
