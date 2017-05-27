@@ -115,3 +115,12 @@ CPoint QtBox::edgeCheck(CPoint pos) {
 
 	return ret;
 }// 가장 가까운 edge점의 상대좌표 리턴, 없으면(-1, -1)
+
+void QtBox::save(CArchive& ar)
+{
+	ar << key << m_lu << m_rd << m_stereotype << m_name << m_attribute << m_operation;
+}
+void QtBox::load(CArchive& ar)
+{
+	ar >> key >> m_lu >> m_rd >> m_stereotype >> m_name >> m_attribute >> m_operation;
+}

@@ -11,6 +11,7 @@ public:
 	CString m_operation; // 클래스의 함수 정보
 
 public:
+	QtBox() {};
 	QtBox(CPoint pos_center, int stereotype, const CString& name, const CString& attribute, const CString& operation); // : 객체 생성자
 	void redraw(CClientDC & dc, bool selected); // 자기자신 그리기, selected이면 강조 테두리 그리기
 	void move(CPoint vec); // vec 만큼 이동
@@ -23,5 +24,7 @@ public:
 	CPoint getLu();
 	CPoint getRd();
 	CPoint edgeCheck(CPoint pos); // 가장 가까운 edge점의 상대좌표 리턴, 없으면(-1, -1)
+	void save(CArchive& ar);
+	void load(CArchive& ar);
 
 };

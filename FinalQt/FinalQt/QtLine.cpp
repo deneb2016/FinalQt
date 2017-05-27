@@ -243,3 +243,30 @@ bool QtLine::selectArea(CPoint lu, CPoint rd) {
 
 	return inclStart && inclEnd;
 }
+
+void QtLine::save(CArchive& ar)
+{
+
+	ar << m_absStart << m_absEnd; // 절대 좌표
+	ar << m_pboxStart->getKey();
+	ar << m_pboxEnd->getKey(); // 가리키는 상자
+	ar << m_relStart, m_relEnd; // 상대 좌표(0~100, 퍼센트)
+	ar << m_relation; // 두 클래스의 관계
+	ar << m_diagonal; //직선이면 0, 사선이면 1
+
+}
+void QtLine::load(CArchive& ar)
+{
+
+	ar >> m_absStart >> m_absEnd; // 절대 좌표
+	int k1, k2;
+	ar >> k1;
+	ar >> k2; // 가리키는 상자
+	m_pboxStart = (QtBox*)k1;
+	m_pboxEnd = (QtBox*)k2;
+
+	ar >> m_relStart, m_relEnd; // 상대 좌표(0~100, 퍼센트)
+	ar >> m_relation; // 두 클래스의 관계
+	ar >> m_diagonal; //직선이면 0, 사선이면 1
+
+}

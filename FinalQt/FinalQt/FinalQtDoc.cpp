@@ -25,6 +25,11 @@ BEGIN_MESSAGE_MAP(CFinalQtDoc, CDocument)
 END_MESSAGE_MAP()
 
 
+
+#include "QtShape.h"
+#include "QtLine.h"
+#include "QtBox.h"
+#include <algorithm>
 // CFinalQtDoc 생성/소멸
 
 CFinalQtDoc::CFinalQtDoc()
@@ -58,16 +63,37 @@ void CFinalQtDoc::Serialize(CArchive& ar)
 	if (ar.IsStoring())
 	{
 		// TODO: 여기에 저장 코드를 추가합니다.
-//		ar << QtShape::getNextKey();
+		ar << QtShape::nextKey << boxList.size() << lineList.size();
 		for (int i = 0; i < boxList.size(); ++i)
 		{
-	//		boxList[i]->save(ar);
+			boxList[i]->save(ar);
 		}
-		//for (int i = 0; i < line)
+		for (int i = 0; i < lineList.size(); ++i)
+		{
+			lineList[i]->save(ar);
+		}
 	}
 	else
 	{
 		// TODO: 여기에 로딩 코드를 추가합니다.
+		int bc, nc;
+		ar >> QtShape::nextKey >> bc >> nc;
+		for (int i = 0; i < bc; ++i)
+		{
+			QtBox* box = new QtBox();
+			box->load(ar);
+			boxList.push_back(box);
+			boxHash[box->getKey()] = box;
+		}
+		for (int i = 0; i < nc; ++i)
+		{
+			QtLine* line = new QtLine();
+			line->load(ar);
+			line->m_pboxStart = boxHash[(int)(line->m_pboxStart)];
+			line->m_pboxEnd = boxHash[(int)(line->m_pboxEnd)];
+			lineList.push_back(line);
+			lineHash[line->getKey()] = line;
+		}
 	}
 }
 
@@ -146,10 +172,6 @@ void CFinalQtDoc::Dump(CDumpContext& dc) const
 
 
 /* 여기부터 내꺼 */
-#include "QtShape.h"
-#include "QtLine.h"
-#include "QtBox.h"
-#include <algorithm>
 using namespace std;
 void CFinalQtDoc::createBox(CPoint pt, int steroType, CString name, CString attribute, CString operation)
 {

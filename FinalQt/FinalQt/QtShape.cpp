@@ -10,15 +10,6 @@ QtShape::~QtShape()
 {
 }
 
-void QtShape::setNextKey(int nk)
-{
-	nextKey = nk;
-}
-
-int QtShape::getNextKey()
-{
-	return nextKey;
-}
 CPoint QtShape::relativeToAbsolute(CPoint lu, CPoint rd, CPoint relPos) {
 	CPoint diff = rd - lu;
 	diff.x *= relPos.x / 100;
