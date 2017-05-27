@@ -63,6 +63,7 @@ public:
 	void pushKey(int key);
 	bool hasKey(int key);
 	int m_changeLine;
+	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 };
 
 #ifndef _DEBUG  // FinalQtView.cpp의 디버그 버전
