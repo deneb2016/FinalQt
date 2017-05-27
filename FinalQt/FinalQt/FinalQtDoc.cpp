@@ -166,7 +166,7 @@ int CFinalQtDoc::createLine(CPoint pt, int lineType, int lineShape)
 			return newLine->getKey();
 		}
 	}
-	newLine = new QtLine(0, ret, lineType, lineShape);
+	newLine = new QtLine(0, pt, lineType, lineShape);
 	lineList.push_back(newLine);
 	lineHash[newLine->getKey()] = newLine;
 	return newLine->getKey();
