@@ -60,6 +60,8 @@ public:
 	CPoint m_ptS;
 	CPoint m_prevPt;
 	int m_lastSelectObj;
+	void pushKey(int key);
+	bool hasKey(int key);
 };
 
 #ifndef _DEBUG  // FinalQtView.cpp의 디버그 버전
