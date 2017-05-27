@@ -97,8 +97,8 @@ void QtLine::redraw(CClientDC & dc, bool selected) {
 	int penWidth = (selected) ? 3 : 1;
 	COLORREF penColor = (selected) ? RGB(255, 0, 0) : RGB(0, 0, 0);
 	int penStyle = PS_NULL;
-	if (m_relation == 1 || m_relation == 4) penStyle = PS_SOLID;
-	if (m_relation == 2 || m_relation == 3) penStyle = PS_DASH;
+	if (m_relation == REL_GENERALIZATION || m_relation == REL_ASSOCIATION) penStyle = PS_SOLID;
+	if (m_relation == REL_REALIZATION || m_relation == REL_DEPENDENCY) penStyle = PS_DASH;
 	CPen MyPen(penStyle, penWidth, penColor);
 
 	dc.SelectObject(&MyPen);
@@ -177,7 +177,7 @@ void QtLine::redraw(CClientDC & dc, bool selected) {
 	}
 
 	if (m_diagonal == true) {
-		if (m_relation == 1 || m_relation == 2) { //삼각형화살표
+		if (m_relation == REL_GENERALIZATION || m_relation == REL_REALIZATION) { //삼각형화살표
 			CPoint dirEnd = getDirection(m_relEnd);
 			CPoint tp1 = posEnd;
 			CPoint tp2 = posEnd + dirEnd + CPoint(dirEnd.y / 2, dirEnd.x / 2);
@@ -192,11 +192,11 @@ void QtLine::redraw(CClientDC & dc, bool selected) {
 			dc.MoveTo(m_absStart);
 			dc.LineTo(posEnd + dirEnd);
 		}
-		else if (m_relation == 4) { //x
+		else if (m_relation == REL_ASSOCIATION) { //x
 			dc.MoveTo(m_absStart);
 			dc.LineTo(m_absEnd);
 		}
-		else if (m_relation == 3) { //화살화살표
+		else if (m_relation == REL_DEPENDENCY) { //화살화살표
 
 			CPoint dirEnd = getDirection(m_relEnd);
 			CPoint tp1 = posEnd;

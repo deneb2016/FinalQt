@@ -7,6 +7,7 @@
 #include "afxdialogex.h"
 
 
+
 // CClassEditDlg 대화 상자입니다.
 
 IMPLEMENT_DYNAMIC(CClassEditDlg, CDialog)
@@ -56,11 +57,17 @@ BOOL CClassEditDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// TODO:  여기에 추가 초기화 작업을 추가합니다.
+	// TODO:  여기에 추가 초기화 작업을 추가합니다.	
+
 	m_comboInput.AddString(_T("Utility"));
 	m_comboInput.AddString(_T("Abstract"));
 	m_comboInput.AddString(_T("Interface"));
-	cIndex = 2;
+
+
+	
+	
+
+	UpdateData(FALSE);
 	m_comboInput.SetCurSel(cIndex);
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.

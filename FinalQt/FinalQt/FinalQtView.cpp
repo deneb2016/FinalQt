@@ -12,6 +12,7 @@
 #include "FinalQtDoc.h"
 #include "FinalQtView.h"
 #include "ClassEditDlg.h"
+#include "LineEdit.h"
 #include "Resource.h"
 #include "FinalQtDoc.h"
 #include "Global.h"
@@ -39,6 +40,7 @@ BEGIN_MESSAGE_MAP(CFinalQtView, CView)
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()
 	ON_WM_KEYDOWN()
+	ON_COMMAND(ID_CHANGESHAPE, &CFinalQtView::OnChangeshape)
 END_MESSAGE_MAP()
 
 // CFinalQtView 생성/소멸
@@ -153,6 +155,7 @@ void CFinalQtView::OnCreatbox()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CClassEditDlg dlg;
+	dlg.cIndex = 0;
 	int res = dlg.DoModal();
 
 	if (res == IDOK) {
@@ -163,8 +166,7 @@ void CFinalQtView::OnCreatbox()
 		strClassName.Format(_T("%s"), dlg.m_ClassName);
 		strAttribute.Format(_T("%s"), dlg.m_Attribute);
 		strOperation.Format(_T("%s"), dlg.m_Operation);
-		int tmp[3] = { ST_UTILITY , ST_ABSTRACT, ST_INTERFACE };
-		int f = tmp[dlg.cIndex];		
+		int f = dlg.cIndex;
 
 		CFinalQtDoc* pDoc = GetDocument();
 		ASSERT_VALID(pDoc);
@@ -188,9 +190,8 @@ void CFinalQtView::OnCreateline1()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	m_flag = QT_CREATE_RELATION;
-	m_lineType = INH;
-	m_relationType = STRAIGHT;
-
+	m_relationType = REL_GENERALIZATION;
+	m_lineType = STRAIGHT;
 }
 
 
@@ -199,8 +200,8 @@ void CFinalQtView::OnCreateline2()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	m_flag = QT_CREATE_RELATION;
-	m_lineType = INH;
-	m_relationType = SQUARE;
+	m_relationType = REL_GENERALIZATION;
+	m_lineType = SQUARE;
 }
 
 
@@ -252,7 +253,7 @@ void CFinalQtView::OnLButtonDown(UINT nFlags, CPoint point)
 	case QT_CREATE_RELATION:
 		m_prevPt = m_ptS = point;
 		selectedObj_key.clear();
-		createLine(point, m_lineType, m_relationType);
+		createLine(point, m_relationType, m_lineType);
 		m_flag = QT_CREATE_RELATION_CLICKED;
 		Invalidate();
 		break;
@@ -473,4 +474,64 @@ void CFinalQtView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		break;
 	}
 	CView::OnKeyDown(nChar, nRepCnt, nFlags);
+}
+
+void CFinalQtView::OnChangeshape()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	if (selectedObj_key.size() != 1)
+	{
+		MessageBox(_T("수정할 도형을 하나만 선택해주세요"));
+		return;
+	}
+
+	CFinalQtDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	int selType = pDoc->getShapeType(selectedObj_key[0]);
+	if (selType == BOX) {
+		CClassEditDlg dlg;
+		CString strClassName_prev;
+		CString strAttribute_prev;
+		CString strOperation_prev;
+		int index_prev;
+		pDoc->getBoxInfo(selectedObj_key[0], index_prev, strClassName_prev, strAttribute_prev, strOperation_prev);
+		dlg.m_ClassName = strClassName_prev;
+		dlg.m_Attribute = strAttribute_prev;
+		dlg.m_Operation = strOperation_prev;
+		dlg.cIndex = index_prev;
+		int res = dlg.DoModal();
+
+		if (res == IDOK) {
+			//객체 생성
+			CString strClassName;
+			CString strAttribute;
+			CString strOperation;
+			strClassName.Format(_T("%s"), dlg.m_ClassName);
+			strAttribute.Format(_T("%s"), dlg.m_Attribute);
+			strOperation.Format(_T("%s"), dlg.m_Operation);
+			int f = dlg.cIndex;
+
+			pDoc->editBox(selectedObj_key[0], f, strClassName, strAttribute, strOperation);
+			Invalidate();
+		}
+	}
+	else
+	{
+		CLineEdit dlg;
+		std::pair<int, int> tt = pDoc->getLineInfo(selectedObj_key[0]);
+		dlg.cIndex = tt.first;		
+		int res = dlg.DoModal();
+
+		if (res == IDOK) {
+			//객체 생성
+			int f = dlg.cIndex;
+			int s = tt.second;
+			//라인 정보 수정
+			pDoc->editLine(selectedObj_key[0], f, s);
+			Invalidate();
+		}
+	}
 }

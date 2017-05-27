@@ -187,6 +187,7 @@
     <ClInclude Include="FinalQtDoc.h" />
     <ClInclude Include="FinalQtView.h" />
     <ClInclude Include="Global.h" />
+    <ClInclude Include="LineEdit.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="QtBox.h" />
     <ClInclude Include="QtLine.h" />
@@ -201,6 +202,7 @@
     <ClCompile Include="FinalQt.cpp" />
     <ClCompile Include="FinalQtDoc.cpp" />
     <ClCompile Include="FinalQtView.cpp" />
+    <ClCompile Include="LineEdit.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="QtBox.cpp" />
     <ClCompile Include="QtLine.cpp" />
