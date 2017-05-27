@@ -83,6 +83,7 @@ void QtLine::redraw(CClientDC & dc, bool selected, CPoint framePos) {
 	// 자기자신 그리기, selected이면 강조(시작점 / 끝점에 큰 원 표시), 그리기 전에 상대좌표를 절대좌표로 바꿔주기
 	if (m_diagonal == true) {
 		//'화면상의 절대좌표'구하기
+		
 
 	}
 
@@ -97,8 +98,10 @@ void QtLine::move(CPoint vec) {
 		setAbsEndPoint(m_absEnd + vec);
 	}
 }
-bool QtLine::select(CPoint position) { //해당 선분 위에 정확하게 마우스가 위치할때만 1 리턴, 아니면 0 리턴
-									   //////////////
+bool QtLine::select(CPoint pos) { //해당 선분 위에 정확하게 마우스가 위치할때만 1 리턴, 아니면 0 리턴
+	//+-1point
+	
+
 	return 0;
 }
 

@@ -48,8 +48,13 @@ bool QtBox::select(CPoint pos) {
 bool QtBox::selectArea(CPoint lu, CPoint rd) { //lu, rd로 되어있는 직사각형 안에 이 오브젝트가 있는지
 	CPoint mld = CPoint(m_lu.x, m_rd.y);
 	CPoint mru = CPoint(m_rd.x, m_lu.y);
-	////////////////////
-	return 0;
+
+	bool in1 = inRect(lu, rd, mld);
+	bool in2 = inRect(lu, rd, mru);
+	bool in3 = inRect(lu, rd, m_lu);
+	bool in4 = inRect(lu, rd, m_rd);
+
+	return (in1|in2|in3|in4);
 }
 void QtBox::setStereotype(int stereotype) {
 	m_stereotype = stereotype;
@@ -64,6 +69,6 @@ void QtBox::setOperation(CString operation) {
 	m_operation = operation;
 }
 CPoint QtBox::edgeCheck(CPoint pos) {
-
-		return { 0,0 };
+	
+	return { 0,0 };
 }// 가장 가까운 edge점의 상대좌표 리턴, 없으면(-1, -1)

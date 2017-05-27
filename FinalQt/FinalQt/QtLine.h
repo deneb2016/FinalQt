@@ -21,7 +21,7 @@ public:
 															 //	(*상대좌표 set 할때, 박스가 NULL로 호출될수도 있음.)
 	void redraw(CClientDC & dc, bool selected, CPoint framePos); // 자기자신 그리기, selected이면 강조(시작점 / 끝점에 큰 원 표시);, 그리기 전에 상대좌표를 절대좌표로 바꿔주기
 	void move(CPoint vec); // 허공에 있는 점들만 절대좌표 이동
-	bool select(CPoint position);
+	bool select(CPoint position); //+-1point
 	bool selectArea(CPoint lu, CPoint rd); // 직선 양 점 모두가 Area내에 포함되면 1리턴, 아미녀 0
 
 };
