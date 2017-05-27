@@ -58,6 +58,12 @@ void CFinalQtDoc::Serialize(CArchive& ar)
 	if (ar.IsStoring())
 	{
 		// TODO: 여기에 저장 코드를 추가합니다.
+//		ar << QtShape::getNextKey();
+		for (int i = 0; i < boxList.size(); ++i)
+		{
+	//		boxList[i]->save(ar);
+		}
+		//for (int i = 0; i < line)
 	}
 	else
 	{
@@ -203,12 +209,12 @@ void CFinalQtDoc::deleteObject(int key)
 
 int CFinalQtDoc::find(CPoint pt)
 {
-	for (int i = lineList.size(); i >= 0; --i) {
+	for (int i = lineList.size() - 1; i >= 0; --i) {
 		QtShape* here = lineList[i];
 		if (here->select(pt))
 			return here->getKey();
 	}
-	for (int i = boxList.size(); i >= 0; --i) {
+	for (int i = boxList.size() - 1; i >= 0; --i) {
 		QtShape* here = boxList[i];
 		if (here->select(pt))
 			return here->getKey();
@@ -322,7 +328,7 @@ void CFinalQtDoc::moveLine(int key, CPoint pos, int flag)
 		return;
 	line = lineHash[key];
 	if (flag == FROM) {
-		for (int i = boxList.size(); i >= 0; --i) {
+		for (int i = boxList.size() -1; i >= 0; --i) {
 			QtBox* box = boxList[i];
 			CPoint ret = box->edgeCheck(pos);
 			if (ret.x != -1)
@@ -333,7 +339,7 @@ void CFinalQtDoc::moveLine(int key, CPoint pos, int flag)
 		}
 	}
 	else if (flag == TO) {
-		for (int i = boxList.size(); i >= 0; --i) {
+		for (int i = boxList.size() - 1; i >= 0; --i) {
 			QtBox* box = boxList[i];
 			CPoint ret = box->edgeCheck(pos);
 			if (ret.x != -1)
