@@ -6,10 +6,7 @@
 #pragma once
 #include <vector>
 #include <unordered_map>
-#define BOX 1
-#define LINE 2
-#define FROM 3
-#define TO 4
+
 
 class QtShape;
 class QtBox;
