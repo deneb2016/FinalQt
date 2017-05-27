@@ -8,11 +8,11 @@ class QtLine : public QtShape {
 private:
 	CPoint m_absStart, m_absEnd; // 절대 좌표
 	CPoint m_relStart, m_relEnd; // 상대 좌표(0~100, 퍼센트)
-	int m_relation; // 두 클래스의 관계
-	bool m_diagonal; //직선이면 0, 사선이면 1
 	std::vector<CPoint> m_trace; //그릴 벡터들, start->end여야함
 public:
 	QtLine() {};
+	int m_relation; // 두 클래스의 관계
+	bool m_diagonal; //직선이면 0, 사선이면 1
 	QtBox *m_pboxStart, *m_pboxEnd; // 가리키는 상자
 	QtLine(QtBox* startBox, CPoint relStart, int relation, bool diagonal);  // 어떤 박스위에 있는지, 상대좌표를 받아서 StartPoint 지정, EndPoint는 처음에는 해당 없음
 	int pointCheck(CPoint pos); // START(1) / END(0) 포인트 중 어느 포인트 주변에 있는지 리턴, 둘중 해당안되면 - 1리턴

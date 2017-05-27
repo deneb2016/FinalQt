@@ -385,4 +385,22 @@ void CFinalQtDoc::load(CString filename)
 
 }
 
-
+std::pair<int, int> CFinalQtDoc::getLineInfo(int key)
+{
+	pair<int, int> ret(-1, -1);
+	if (lineHash.find(key) != lineHash.end()) {
+		QtLine* line = lineHash[key];
+		ret.first = line->m_relation;
+		ret.second = line->m_diagonal;
+	}
+	return ret;
+}
+void CFinalQtDoc::editLine(int key, int type, int shape) //라인의 속성을0 바꾼다.
+{
+	pair<int, int> ret(-1, -1);
+	if (lineHash.find(key) != lineHash.end()) {
+		QtLine* line = lineHash[key];
+		ret.first = line->m_relation;
+		ret.second = line->m_diagonal;
+	}
+}

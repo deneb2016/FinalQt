@@ -36,6 +36,10 @@ public:
 	void save(CString filename);
 	void load(CString filename);
 
+	//type, shape 리턴
+	std::pair<int, int> getLineInfo(int key);// Line의 정보를 가지고온다. //순서대로.
+	void editLine(int key, int type, int shape); //라인의 속성을0 바꾼다.
+
 protected: // serialization에서만 만들어집니다.
 	CFinalQtDoc();
 	DECLARE_DYNCREATE(CFinalQtDoc)
