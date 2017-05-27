@@ -38,7 +38,7 @@ CPoint QtShape::getDirection(CPoint relPos) {
 	if (relPos.x == 100) return CPoint{ pl,0 };
 	else if (relPos.x == 0) return CPoint{ -pl,0 };
 	else if (relPos.y == 100) return CPoint{ 0,pl };
-	else if (relPos.y == 0) return { 0,-pl };
+	else if (relPos.y == 0) return{ 0,-pl };
 	else return -1;
 }
 bool QtShape::inRect(CPoint lu, CPoint rd, CPoint pos) {

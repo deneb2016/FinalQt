@@ -1,6 +1,7 @@
 #pragma once
 
 #include "QtShape.h"
+
 class QtBox : public QtShape {
 	CPoint m_lu, m_rd; // Box의 위치와 크기를 지정하기 위한 Rectangle
 public:

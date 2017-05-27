@@ -33,6 +33,39 @@ QtBox::QtBox(CPoint pos_center, int stereotype, const CString& name, const CStri
 void QtBox::redraw(CClientDC & dc, bool selected) {
 	// 자기자신 그리기, selected이면 강조 테두리 그리기
 
+	CString stereo = L"";
+	stereo.Append(L"<<");
+	switch (m_stereotype) {
+	case ST_UTILITY: stereo.Append(L"utility"); break;
+	case ST_ABSTRACT: stereo.Append(L"abstract"); break;
+	case ST_INTERFACE: stereo.Append(L"interface"); break;
+	}
+	stereo.Append(L">>\n");
+	stereo.Append(m_name);
+	stereo.Append(L"-------------");
+	stereo.Append(m_attribute);
+	stereo.Append(L"-------------");
+	stereo.Append(m_operation);
+
+
+	CRect rect(m_lu.x, m_lu.y, m_rd.x, m_rd.x); //left, top, right, bottom
+	dc.DrawText(stereo, rect, DT_CALCRECT);
+	dc.DrawText(stereo, rect, DT_CENTER);
+	m_rd.x = rect.right;
+	m_rd.y = rect.bottom;
+
+	int penWidth = (selected) ? 2 : 1;
+	COLORREF penColor = (selected) ? RGB(255, 0, 0) : RGB(0, 0, 0);
+	CPen pen(PS_SOLID, penWidth, penColor);
+	dc.SelectObject(&pen);
+	dc.MoveTo(m_lu);
+	dc.LineTo(m_lu.x, m_rd.y);
+	dc.MoveTo(m_lu.x, m_rd.y);
+	dc.LineTo(m_rd);
+	dc.MoveTo(m_rd);
+	dc.LineTo(m_rd.x, m_lu.y);
+	dc.MoveTo(m_rd.x, m_lu.y);
+	dc.LineTo(m_lu);
 
 }
 void QtBox::move(CPoint vec) {
@@ -54,7 +87,7 @@ bool QtBox::selectArea(CPoint lu, CPoint rd) { //lu, rd로 되어있는 직사각형 안에
 	bool in3 = inRect(lu, rd, m_lu);
 	bool in4 = inRect(lu, rd, m_rd);
 
-	return (in1|in2|in3|in4);
+	return (in1 | in2 | in3 | in4);
 }
 void QtBox::setStereotype(int stereotype) {
 	m_stereotype = stereotype;
@@ -69,6 +102,16 @@ void QtBox::setOperation(CString operation) {
 	m_operation = operation;
 }
 CPoint QtBox::edgeCheck(CPoint pos) {
-	
-	return { 0,0 };
+	CPoint nearest;
+	if (abs(pos.x - m_rd.x) <= 2) nearest.x = m_rd.x;
+	else if (abs(pos.x - m_lu.x) <= 2) nearest.x = m_lu.x;
+	else return{ -1,-1 };
+
+	if (abs(pos.y - m_rd.y) <= 2) nearest.y = m_rd.y;
+	else if (abs(pos.y - m_rd.y) <= 2) nearest.y = m_rd.y;
+	else return{ -1,-1 };
+
+	CPoint ret((int)(((double)pos.x*(double)100) / (double)nearest.x), (int)(((double)pos.y*(double)100) / (double)nearest.y));
+
+	return ret;
 }// 가장 가까운 edge점의 상대좌표 리턴, 없으면(-1, -1)

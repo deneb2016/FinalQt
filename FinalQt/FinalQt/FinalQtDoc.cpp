@@ -152,8 +152,24 @@ void CFinalQtDoc::createBox(CPoint pt, int steroType, CString name, CString attr
 	boxHash[newBox->getKey()] =  (QtBox*)newBox;
 }
 
-void CFinalQtDoc::createLine(CPoint pt, int lineType, int lineShape)
+int CFinalQtDoc::createLine(CPoint pt, int lineType, int lineShape)
 {
+	QtLine* newLine = NULL;
+	for (int i = 0; i < boxList.size(); ++i)
+	{
+		QtBox* here = boxList[i];
+		CPoint ret = here->edgeCheck(pt);
+		if (ret.x != -1) {
+			newLine = new QtLine(here, ret, lineType, lineShape);
+			lineList.push_back(newLine);
+			lineHash[newLine->getKey()] = newLine;
+			return newLine->getKey();
+		}
+	}
+	newLine = new QtLine(0, ret, lineType, lineShape);
+	lineList.push_back(newLine);
+	lineHash[newLine->getKey()] = newLine;
+	return newLine->getKey();
 }
 
 void CFinalQtDoc::deleteObject(int key)

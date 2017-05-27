@@ -22,7 +22,7 @@ private:
 
 public:
 	void createBox(CPoint pt, int steroType, CString name, CString attribute, CString operation);
-	void createLine(CPoint pt, int lineType, int lineShape);
+	int createLine(CPoint pt, int lineType, int lineShape);
 	void deleteObject(int key);
 	int find(CPoint pt);
 	void redrawAllObj(CClientDC& dc, std::vector<int> selected);

@@ -17,15 +17,23 @@ bool m_diagonal; //직선이면 0, 사선이면 1
 QtLine::QtLine(QtBox* startBox, CPoint relStart, int relation, bool diagonal) {
 	key = nextKey++;
 
-	// 어떤 박스위에 있는지, 상대좌표를 받아서 StartPoint 지정, EndPoint는 처음에는 해당 없음
-	m_pboxStart = startBox;
-	m_pboxEnd = nullptr;
-	m_relStart = relStart;
-	m_relEnd = { -1,-1 };
+	if (startBox == nullptr) {//relStart가 절대좌표로 들어온다
+		m_pboxStart = nullptr;
+		m_pboxEnd = nullptr;
+		m_relStart = { -1,-1 };
+		m_relEnd = { -1,-1 };
+		m_absStart = relStart;
+	}
+	else {
+		// 어떤 박스위에 있는지, 상대좌표를 받아서 StartPoint 지정, EndPoint는 처음에는 해당 없음
+		m_pboxStart = startBox;
+		m_pboxEnd = nullptr;
+		m_relStart = relStart;
+		m_relEnd = { -1,-1 };
+		m_absStart = relativeToAbsolute(startBox->getLu(), startBox->getRd(), relStart);
+	}
 	m_relation = relation;
 	m_diagonal = diagonal;
-
-	m_absStart = relativeToAbsolute(startBox->getLu(), startBox->getRd(), relStart);
 }
 
 
@@ -79,9 +87,9 @@ void QtLine::setRelStartPoint(QtBox* startBox, CPoint relStart) {
 	m_absStart = relativeToAbsolute(startBox->getLu(), startBox->getRd(), relStart);
 }
 
-void QtLine::redraw(CClientDC & dc, bool selected, CPoint framePos) {
+void QtLine::redraw(CClientDC & dc, bool selected) {
 	// 자기자신 그리기, selected이면 강조(시작점 / 끝점에 큰 원 표시), 그리기 전에 상대좌표를 절대좌표로 바꿔주기
-	
+
 	int penStyle = PS_NULL;
 	if (m_relation == 1 || m_relation == 4) penStyle = PS_SOLID;
 	if (m_relation == 2 || m_relation == 3) penStyle = PS_DASH;
@@ -90,8 +98,8 @@ void QtLine::redraw(CClientDC & dc, bool selected, CPoint framePos) {
 	dc.SelectObject(&MyPen);
 
 	//'화면상의 절대좌표'구하기
-	CPoint posEnd = framePos + m_absEnd;
-	CPoint posStart = framePos + m_absStart;
+	CPoint posEnd = m_absEnd;
+	CPoint posStart = m_absStart;
 
 	/*1. 선그리기*/
 	if (m_diagonal == true) {
@@ -99,12 +107,12 @@ void QtLine::redraw(CClientDC & dc, bool selected, CPoint framePos) {
 		dc.LineTo(posEnd);
 	}
 	else {
-		//////////////////저절로 꺾이는
+		//저절로 꺾이는
 		CPoint dirStart = getDirection(m_relStart);
 		CPoint dirEnd = getDirection(m_relEnd);
 
-		std::vector<CPoint> trace; //그릴 벡터들, start->end여야함
-		trace.push_back(dirStart);
+		m_trace.clear();
+		m_trace.push_back(dirStart);
 
 		CPoint moveVec = posEnd + dirEnd - (posStart + dirStart);
 		//같은 direction이 있으면 우선권주기
@@ -117,25 +125,25 @@ void QtLine::redraw(CClientDC & dc, bool selected, CPoint framePos) {
 
 			CPoint moveVec_v = moveVec - moveVec_p;
 
-			trace.push_back(moveVec_p_half);
-			trace.push_back(moveVec_v);
-			trace.push_back(moveVec_p_half);
+			m_trace.push_back(moveVec_p_half);
+			m_trace.push_back(moveVec_v);
+			m_trace.push_back(moveVec_p_half);
 
 		}
 		else if (preS) {
 			//1. Start에 우선권
 			CPoint moveVec_p = CPoint(dirStart.x / dirStart.x * moveVec.x, dirStart.y / dirStart.y * moveVec.y); //dirStart의 방향과 같은 direction
 			CPoint moveVec_v = moveVec - moveVec_p;
-			trace.push_back(moveVec_p);
-			trace.push_back(moveVec_v);
-			
+			m_trace.push_back(moveVec_p);
+			m_trace.push_back(moveVec_v);
+
 		}
 		else if (preE) {
 			//2. End에 우선권
 			CPoint moveVec_p = CPoint(dirStart.x / dirStart.x * moveVec.x, dirStart.y / dirStart.y * moveVec.y); //dirStart의 방향과 같은 direction
 			CPoint moveVec_v = moveVec - moveVec_p;
-			trace.push_back(moveVec_p);
-			trace.push_back(moveVec_v);
+			m_trace.push_back(moveVec_p);
+			m_trace.push_back(moveVec_v);
 		}
 		else {
 			//3. 둘다 옆방향으로
@@ -144,21 +152,21 @@ void QtLine::redraw(CClientDC & dc, bool selected, CPoint framePos) {
 
 			CPoint moveVec_p = moveVec - moveVec_v;
 
-			trace.push_back(moveVec_v_half);
-			trace.push_back(moveVec_p);
-			trace.push_back(moveVec_v_half);
+			m_trace.push_back(moveVec_v_half);
+			m_trace.push_back(moveVec_p);
+			m_trace.push_back(moveVec_v_half);
 
 		}
-		trace.push_back(dirEnd);
-		/*구한 trace 그리기*/
+		m_trace.push_back(dirEnd);
+		/*구한 m_trace 그리기*/
 
 		CPoint v = posStart;
-		for(auto& w:trace){
+		for (auto& w : m_trace) {
 			dc.MoveTo(v);
-			dc.LineTo(v+w);
+			dc.LineTo(v + w);
 			v = v + w;
 		}
-		
+
 	}
 
 
@@ -167,7 +175,7 @@ void QtLine::redraw(CClientDC & dc, bool selected, CPoint framePos) {
 	if (m_relation == 1 || m_relation == 2) arrayStyle = 1;//검은원점
 	else if (m_relation == 3) arrayStyle = 2; //빈 원점
 
-	if(arrayStyle != 0){
+	if (arrayStyle != 0) {
 		COLORREF arrayColor;
 		if (arrayStyle == 1) arrayColor = RGB(0, 0, 0);
 		else arrayColor = RGB(255, 255, 255);
@@ -176,7 +184,7 @@ void QtLine::redraw(CClientDC & dc, bool selected, CPoint framePos) {
 		dc.SelectObject(&MyBrush);
 		dc.Ellipse(posEnd.x - 1, posEnd.y - 1, posEnd.x + 1, posEnd.y + 1);
 	}
-	
+
 }
 
 void QtLine::move(CPoint vec) {
@@ -188,9 +196,42 @@ void QtLine::move(CPoint vec) {
 		setAbsEndPoint(m_absEnd + vec);
 	}
 }
-bool QtLine::select(CPoint pos) { //해당 선분 위에 정확하게 마우스가 위치할때만 1 리턴, 아니면 0 리턴
-	//+-1point
-	
+
+bool QtLine::select(CPoint pos) { //해당 선분 위에 (+-1pixel) 마우스가 위치할때만 1 리턴, 아니면 0 리턴
+								  //+-1point
+	if (m_diagonal) {
+		CPoint lu_temp, rd_temp;
+		lu_temp.x = (m_absEnd.x <= m_absStart.x) ? m_absEnd.x : m_absStart.x;
+		rd_temp.x = (m_absEnd.x <= m_absStart.x) ? m_absStart.x : m_absEnd.x;
+		lu_temp.y = (m_absEnd.y <= m_absStart.y) ? m_absEnd.y : m_absStart.y;
+		rd_temp.y = (m_absEnd.y <= m_absStart.y) ? m_absStart.y : m_absEnd.y;
+
+		if (inRect(lu_temp, rd_temp, pos)) {
+
+			CPoint pV = pos - m_absStart; //part vector
+			CPoint wV = m_absEnd - m_absStart; //whole vector
+											   //partVect normalization
+			double wvL = sqrt(wV.x*wV.x + wV.y*wV.y);
+			CPoint dist = pV - CPoint((double)wV.x / wvL, (double)wV.y / wvL);
+			if (dist.x*dist.x + dist.y*dist.y < 10) return 1;
+		}
+	}
+	else {
+		CPoint v = m_absStart;
+		for (auto& w : m_trace) {
+			CPoint lu_temp, rd_temp;
+			lu_temp.x = (w.x >= 0) ? v.x : v.x + w.x;
+			rd_temp.x = (w.x >= 0) ? v.x + w.x : v.x;
+			lu_temp.y = (w.y >= 0) ? v.y : v.y + w.y;
+			rd_temp.y = (w.y >= 0) ? v.y + w.y : v.y;
+			lu_temp += CPoint(1, 1);
+			rd_temp -= CPoint(1, 1);
+
+			if (inRect(lu_temp, rd_temp, pos)) return 1;
+			v = v + w;
+		}
+
+	}
 
 	return 0;
 }
