@@ -30,12 +30,12 @@ public:
 	int find(CPoint pt);
 	void redrawAllObj(CClientDC& dc, std::vector<int> selected);
 	int getShapeType(int key);
-	std::vector<CString> getBoxInfo(int key);
-	void moveObjects(CPoint pt, std::vector<int> key);
-	void editBox(int key, const std::vector<CString>& infi);
+	void getBoxInfo(int key, int& steroType, CString& name, CString& attribute, CString& operation);
+	void moveObjects(CPoint pt, std::vector<int> selected);
+	void editBox(int key, int steroType, CString name, CString attribute, CString operation);
 	std::vector<int> selectArea(CPoint lu, CPoint rd);
 	std::pair<int, int> isLinePoint(CPoint pt);
-	void moveLine(int key, CPoint vec, int flag);
+	void moveLine(int key, CPoint pos, int flag);
 	void save(CString filename);
 	void load(CString filename);
 

@@ -183,9 +183,6 @@ void CFinalQtDoc::deleteObject(int key)
 			}
 		}
 	}
-	else {
-		abort();
-	}
 }
 
 int CFinalQtDoc::find(CPoint pt)
@@ -226,39 +223,110 @@ int CFinalQtDoc::getShapeType(int key)
 		return BOX;
 	return 0;
 }
-vector<CString> CFinalQtDoc::getBoxInfo(int key)
+void CFinalQtDoc::getBoxInfo(int key, int& steroType, CString& name, CString& attribute, CString& operation)
 {
-	vector<CString> ret;
 	QtBox* here = 0;
 	auto iter = boxHash.find(key);
 	if (iter != boxHash.end())
 	{
 		here = iter->second;
-		//dddsf
+		steroType = here->m_stereotype;
+		name = here->m_name;
+		attribute = here->m_attribute;
+		operation = here->m_operation;
 	}
-	return ret;
 }
-void CFinalQtDoc::moveObjects(CPoint pt, std::vector<int> key)
+void CFinalQtDoc::moveObjects(CPoint pt, vector<int> selected)
 {
-
+	for (int k : selected)
+	{
+		QtShape* here = 0;
+		if (boxHash.find(k) != boxHash.end())
+			here = boxHash[k];
+		else if (lineHash.find(k) != lineHash.end())
+			here = lineHash[k];
+		else
+			continue;
+		here->move(pt);
+	}
 }
-void CFinalQtDoc::editBox(int key, const std::vector<CString>& infi)
+void CFinalQtDoc::editBox(int key, int steroType, CString name, CString attribute, CString operation)
 {
-
+	QtBox* box = 0;
+	if (boxHash.find(key) == boxHash.end())
+		return;
+	box = boxHash[key];
+	box->m_stereotype = steroType;
+	box->m_name = name;
+	box->m_attribute = attribute;
+	box->m_operation = operation;
 }
 vector<int> CFinalQtDoc::selectArea(CPoint lu, CPoint rd)
 {
 	vector<int> ret;
+	for (int i = 0; i < boxList.size(); ++i) 
+	{
+		QtShape* here = boxList[i];
+		if (here->selectArea(lu, rd))
+			ret.push_back(here->getKey());
+	}
+	for (int i = 0; i < lineList.size(); ++i)
+	{
+		QtShape* here = lineList[i];
+		if (here->selectArea(lu, rd))
+			ret.push_back(here->getKey());
+	}
+
 	return ret;
 }
 pair<int, int> CFinalQtDoc::isLinePoint(CPoint pt)
 {
 	pair<int, int> ret(0, 0);
+	for (int i = 0; i < lineList.size(); ++i)
+	{
+		QtLine* here = lineList[i];
+		int chk = here->pointCheck(pt);
+		if (chk == 1) {
+			ret.first = here->getKey();
+			ret.second = FROM;
+			break;
+		}
+		else if (chk == 0) {
+			ret.first = here->getKey();
+			ret.second = TO;
+			break;
+		}
+	}
 	return ret;
 }
-void CFinalQtDoc::moveLine(int key, CPoint vec, int flag)
+void CFinalQtDoc::moveLine(int key, CPoint pos, int flag)
 {
-
+	QtLine* line = 0;
+	if (lineHash.find(key) == lineHash.end())
+		return;
+	line = lineHash[key];
+	if (flag == FROM) {
+		for (int i = boxList.size(); i >= 0; --i) {
+			QtBox* box = boxList[i];
+			CPoint ret = box->edgeCheck(pos);
+			if (ret.x != -1)
+			{
+				line->setRelStartPoint(box, ret);
+				break;
+			}
+		}
+	}
+	else if (flag == TO) {
+		for (int i = boxList.size(); i >= 0; --i) {
+			QtBox* box = boxList[i];
+			CPoint ret = box->edgeCheck(pos);
+			if (ret.x != -1)
+			{
+				line->setRelEndPoint(box, ret);
+				break;
+			}
+		}
+	}
 }
 void CFinalQtDoc::save(CString filename)
 {
