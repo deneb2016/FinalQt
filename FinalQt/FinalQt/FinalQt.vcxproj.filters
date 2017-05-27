@@ -54,6 +54,9 @@
     <ClInclude Include="Global.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="ClassEditDlg.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FinalQt.cpp">
@@ -81,6 +84,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="QtBox.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ClassEditDlg.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

@@ -43,6 +43,17 @@ protected:
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	DECLARE_MESSAGE_MAP()
+public:
+	std::vector<int> selectedObj_key;
+	afx_msg void OnCreatbox();
+	CString strClassName;
+	CString strAttribute;
+	CString strOperation;
+	afx_msg void OnCreaterelation();
+	afx_msg void On32778();
+	afx_msg void OnCreateline1();
+	afx_msg void OnCreateline2();
+	void createLine(CPoint pt, int lineType, int lineShape);
 };
 
 #ifndef _DEBUG  // FinalQtView.cpp의 디버그 버전
