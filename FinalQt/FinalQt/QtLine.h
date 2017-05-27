@@ -5,7 +5,7 @@ class QtBox;
 
 
 class QtLine : public QtShape {
-private:
+public:
 	CPoint m_absStart, m_absEnd; // 절대 좌표
 	CPoint m_relStart, m_relEnd; // 상대 좌표(0~100, 퍼센트)
 	std::vector<CPoint> m_trace; //그릴 벡터들, start->end여야함
