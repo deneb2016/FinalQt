@@ -8,6 +8,8 @@
 
 class CFinalQtDoc : public CDocument
 {
+private:
+
 protected: // serialization에서만 만들어집니다.
 	CFinalQtDoc();
 	DECLARE_DYNCREATE(CFinalQtDoc)

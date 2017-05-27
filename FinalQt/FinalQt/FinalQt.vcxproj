@@ -185,6 +185,7 @@
     <ClInclude Include="FinalQt.h" />
     <ClInclude Include="FinalQtDoc.h" />
     <ClInclude Include="FinalQtView.h" />
+    <ClInclude Include="Global.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="QtBox.h" />
     <ClInclude Include="QtLine.h" />
