@@ -19,7 +19,7 @@
 #define new DEBUG_NEW
 #endif
 
-enum {QT_DEFAULT, QT_CREATE_CLASS, QT_CREATE_RELATION, QT_MOVE_CLASS, QT_MOVE_RELATION, QT_MOUSELDOWN, QT_MOVE_SHAPE, QT_SELECT_MANY, QT_MOVE_ALLSHAPE, QT_SPACECLICK, QT_CREATE_RELATION_CLICKED, QT_LINE_MODIFY
+enum {QT_DEFAULT, QT_CREATE_CLASS, QT_CREATE_RELATION, QT_MOVE_CLASS, QT_MOVE_RELATION, QT_MOUSELDOWN, QT_MOVE_SHAPE, QT_SELECT_MANY, QT_MOVE_ALLSHAPE, QT_SPACECLICK, QT_CREATE_RELATION_CLICKED, QT_LINE_MODIFY, QT_SPACECLICK_MOVE
 }qt_flgtyp;
 // CFinalQtView
 
@@ -38,6 +38,7 @@ BEGIN_MESSAGE_MAP(CFinalQtView, CView)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()
+	ON_WM_KEYDOWN()
 END_MESSAGE_MAP()
 
 // CFinalQtView 생성/소멸
@@ -163,9 +164,7 @@ void CFinalQtView::OnCreatbox()
 		strAttribute.Format(_T("%s"), dlg.m_Attribute);
 		strOperation.Format(_T("%s"), dlg.m_Operation);
 		int tmp[3] = { ST_UTILITY , ST_ABSTRACT, ST_INTERFACE };
-		int f = tmp[dlg.cIndex];
-
-		MessageBox(_T("%d",f));
+		int f = tmp[dlg.cIndex];		
 
 		CFinalQtDoc* pDoc = GetDocument();
 		ASSERT_VALID(pDoc);
@@ -265,6 +264,14 @@ void CFinalQtView::OnLButtonDown(UINT nFlags, CPoint point)
 	CView::OnLButtonDown(nFlags, point);
 }
 
+inline int Qt_min(int a, int b) {
+	return a < b ? a : b;
+}
+
+inline int Qt_max(int a, int b) {
+	return a > b ? a : b;
+}
+
 
 void CFinalQtView::OnLButtonUp(UINT nFlags, CPoint point)
 {
@@ -280,23 +287,33 @@ void CFinalQtView::OnLButtonUp(UINT nFlags, CPoint point)
 		pushKey(m_lastSelectObj);
 		m_flag = QT_DEFAULT;
 		Invalidate();
-		m_flag = QT_DEFAULT;
 		break;
+	case QT_SPACECLICK_MOVE: {
+		selectedObj_key.clear();
+		CPoint lu;
+		CPoint rd;
+		lu.SetPoint(Qt_min(m_ptS.x, point.x), Qt_min(m_ptS.y, point.y));
+		rd.SetPoint(Qt_max(m_ptS.x, point.x), Qt_max(m_ptS.y, point.y));
+		selectedObj_key = pDoc->selectArea(lu, rd);
+		m_flag = QT_DEFAULT;
+		Invalidate();
+		break;
+	}
 	case QT_SPACECLICK:
 		selectedObj_key.clear();
-		Invalidate();
 		m_flag = QT_DEFAULT;
+		Invalidate();
 		break;
 	case QT_CREATE_RELATION_CLICKED:
 		pDoc->moveLine(key_createRelation, point, TO);
 		selectedObj_key.push_back(key_createRelation);
-		Invalidate();
 		m_flag = QT_DEFAULT;
+		Invalidate();
 		break;
 	case QT_LINE_MODIFY:
 		pDoc->moveLine(m_lastSelectObj, point, m_changeLine);
-		Invalidate();
 		m_flag = QT_DEFAULT;
+		Invalidate();
 		break;
 	default :
 		m_flag = QT_DEFAULT;
@@ -361,10 +378,24 @@ void CFinalQtView::OnMouseMove(UINT nFlags, CPoint point)
 			else
 				m_flag = QT_SELECT_MANY;
 		}
-	}
-	case QT_SELECT_MANY:
-
 		break;
+	}
+	case QT_SPACECLICK: {
+		CPoint cp = point - m_ptS;
+		int d = cp.x*cp.x + cp.y*cp.y;
+		if (d > 5)
+			m_flag = QT_SPACECLICK_MOVE;
+		break;
+	}
+	case QT_SPACECLICK_MOVE: {
+		CRect rc(m_ptS, m_prevPt);
+		dc.SetROP2(R2_NOTXORPEN);
+		dc.Rectangle(&rc);
+
+		rc.SetRect(m_ptS, point);
+		dc.Rectangle(&rc);
+		m_prevPt = point;
+	}
 	}
 	CView::OnMouseMove(nFlags, point);
 }
@@ -418,4 +449,28 @@ bool CFinalQtView::hasKey(int key)
 		if (key == x)
 			return true;
 	return false;
+}
+
+
+void CFinalQtView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	switch (nChar)
+	{
+	case VK_DELETE:
+		if (m_flag == QT_DEFAULT)
+		{
+			CFinalQtDoc* pDoc = GetDocument();
+			ASSERT_VALID(pDoc);
+			if (!pDoc)
+				return;
+			CClientDC dc(this);
+			for (auto x : selectedObj_key)
+				pDoc->deleteObject(x);
+			Invalidate();
+		}
+		break;
+	}
+	CView::OnKeyDown(nChar, nRepCnt, nFlags);
 }
