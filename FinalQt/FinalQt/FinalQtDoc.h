@@ -6,10 +6,15 @@
 #pragma once
 #include <vector>
 #include <unordered_map>
+#define BOX 1
+#define LINE 2
+#define FROM 3
+#define TO 4
 
 class QtShape;
 class QtBox;
 class QtLine;
+
 class CFinalQtDoc : public CDocument
 {
 private:
@@ -23,15 +28,14 @@ public:
 	void createLine(CPoint pt, int lineType, int lineShape);
 	void deleteObject(int key);
 	int find(CPoint pt);
-	void redrawAllObj(const CClientDC& dc, std::vector<int> selected);
+	void redrawAllObj(CClientDC& dc, std::vector<int> selected);
 	int getShapeType(int key);
-	std::vector<CString> getBoxInfo(int key);
-	int getRectangle(CPoint pt);
-	void moveObjects(CPoint pt, std::vector<int> key);
-	void editBox(int key, const std::vector<CString>& infi);
+	void getBoxInfo(int key, int& steroType, CString& name, CString& attribute, CString& operation);
+	void moveObjects(CPoint pt, std::vector<int> selected);
+	void editBox(int key, int steroType, CString name, CString attribute, CString operation);
 	std::vector<int> selectArea(CPoint lu, CPoint rd);
 	std::pair<int, int> isLinePoint(CPoint pt);
-	void moveLine(int key, CPoint vec, int flag);
+	void moveLine(int key, CPoint pos, int flag);
 	void save(CString filename);
 	void load(CString filename);
 

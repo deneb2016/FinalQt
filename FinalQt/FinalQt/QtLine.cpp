@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "QtLine.h"
 #include "QtBox.h"
-
+#include <vector>
 
 
 /*
@@ -81,12 +81,102 @@ void QtLine::setRelStartPoint(QtBox* startBox, CPoint relStart) {
 
 void QtLine::redraw(CClientDC & dc, bool selected, CPoint framePos) {
 	// 자기자신 그리기, selected이면 강조(시작점 / 끝점에 큰 원 표시), 그리기 전에 상대좌표를 절대좌표로 바꿔주기
-	if (m_diagonal == true) {
-		//'화면상의 절대좌표'구하기
-		
+	
+	int penStyle = PS_NULL;
+	if (m_relation == 1 || m_relation == 4) penStyle = PS_SOLID;
+	if (m_relation == 2 || m_relation == 3) penStyle = PS_DASH;
+	CPen MyPen(penStyle, 1, RGB(0, 0, 0));
 
+	dc.SelectObject(&MyPen);
+
+	//'화면상의 절대좌표'구하기
+	CPoint posEnd = framePos + m_absEnd;
+	CPoint posStart = framePos + m_absStart;
+
+	/*1. 선그리기*/
+	if (m_diagonal == true) {
+		dc.MoveTo(posStart);
+		dc.LineTo(posEnd);
+	}
+	else {
+		//////////////////저절로 꺾이는
+		CPoint dirStart = getDirection(m_relStart);
+		CPoint dirEnd = getDirection(m_relEnd);
+
+		std::vector<CPoint> trace; //그릴 벡터들, start->end여야함
+		trace.push_back(dirStart);
+
+		CPoint moveVec = posEnd + dirEnd - (posStart + dirStart);
+		//같은 direction이 있으면 우선권주기
+		bool preS = (dirStart.x * moveVec.x >= 0 && dirStart.y * moveVec.y >= 0);
+		bool preE = (dirEnd.x * moveVec.x >= 0 && dirEnd.y * moveVec.y >= 0);
+		if (preS && preE) {
+			//0. Start, End 모두 우선권
+			CPoint moveVec_p = CPoint(dirStart.x / dirStart.x * moveVec.x, dirStart.y / dirStart.y * moveVec.y); //dirStart의 방향에서 꺾은 쪽의 moveVec 방향
+			CPoint moveVec_p_half = CPoint(moveVec_p.x / 2, moveVec_p.y / 2);
+
+			CPoint moveVec_v = moveVec - moveVec_p;
+
+			trace.push_back(moveVec_p_half);
+			trace.push_back(moveVec_v);
+			trace.push_back(moveVec_p_half);
+
+		}
+		else if (preS) {
+			//1. Start에 우선권
+			CPoint moveVec_p = CPoint(dirStart.x / dirStart.x * moveVec.x, dirStart.y / dirStart.y * moveVec.y); //dirStart의 방향과 같은 direction
+			CPoint moveVec_v = moveVec - moveVec_p;
+			trace.push_back(moveVec_p);
+			trace.push_back(moveVec_v);
+			
+		}
+		else if (preE) {
+			//2. End에 우선권
+			CPoint moveVec_p = CPoint(dirStart.x / dirStart.x * moveVec.x, dirStart.y / dirStart.y * moveVec.y); //dirStart의 방향과 같은 direction
+			CPoint moveVec_v = moveVec - moveVec_p;
+			trace.push_back(moveVec_p);
+			trace.push_back(moveVec_v);
+		}
+		else {
+			//3. 둘다 옆방향으로
+			CPoint moveVec_v = CPoint(dirStart.y / dirStart.y * moveVec.x, dirStart.x / dirStart.x * moveVec.y); //dirStart의 방향에서 꺾은 쪽의 moveVec 방향
+			CPoint moveVec_v_half = CPoint(moveVec_v.x / 2, moveVec_v.y / 2);
+
+			CPoint moveVec_p = moveVec - moveVec_v;
+
+			trace.push_back(moveVec_v_half);
+			trace.push_back(moveVec_p);
+			trace.push_back(moveVec_v_half);
+
+		}
+		trace.push_back(dirEnd);
+		/*구한 trace 그리기*/
+
+		CPoint v = posStart;
+		for(auto& w:trace){
+			dc.MoveTo(v);
+			dc.LineTo(v+w);
+			v = v + w;
+		}
+		
 	}
 
+
+	/*2. 화살표캡 그리기*/
+	int arrayStyle = 0;
+	if (m_relation == 1 || m_relation == 2) arrayStyle = 1;//검은원점
+	else if (m_relation == 3) arrayStyle = 2; //빈 원점
+
+	if(arrayStyle != 0){
+		COLORREF arrayColor;
+		if (arrayStyle == 1) arrayColor = RGB(0, 0, 0);
+		else arrayColor = RGB(255, 255, 255);
+
+		CBrush MyBrush(arrayColor);
+		dc.SelectObject(&MyBrush);
+		dc.Ellipse(posEnd.x - 1, posEnd.y - 1, posEnd.x + 1, posEnd.y + 1);
+	}
+	
 }
 
 void QtLine::move(CPoint vec) {

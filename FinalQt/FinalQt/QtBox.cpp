@@ -41,7 +41,7 @@ void QtBox::move(CPoint vec) {
 }
 bool QtBox::select(CPoint pos) {
 	//좌표가 도형 안에 있으면 true, 아니면 false
-	int incl = (m_lu.x <= pos.x && pos.x <= m_rd.x && m_lu.y <= pos.y && pos.y <= m_rd.y);
+	bool incl = (m_lu.x <= pos.x && pos.x <= m_rd.x && m_lu.y <= pos.y && pos.y <= m_rd.y);
 
 	return incl;
 }
