@@ -42,9 +42,11 @@ void QtBox::redraw(CClientDC & dc, bool selected) {
 	}
 	stereo.Append(L">>\n");
 	stereo.Append(m_name);
-	stereo.Append(L"-------------\n");
+	stereo.Append(L"\n");
+	stereo.Append(L"------------------\n");
 	stereo.Append(m_attribute);
-	stereo.Append(L"-------------\n");
+	stereo.Append(L"\n");
+	stereo.Append(L"------------------\n");
 	stereo.Append(m_operation);
 
 
