@@ -91,10 +91,12 @@ void QtLine::setRelStartPoint(QtBox* startBox, CPoint relStart) {
 void QtLine::redraw(CClientDC & dc, bool selected) {
 	// 자기자신 그리기, selected이면 강조(시작점 / 끝점에 큰 원 표시), 그리기 전에 상대좌표를 절대좌표로 바꿔주기
 
+	int penWidth = (selected) ? 3 : 1;
+	COLORREF penColor = (selected) ? RGB(255, 0, 0) : RGB(0, 0, 0);
 	int penStyle = PS_NULL;
 	if (m_relation == 1 || m_relation == 4) penStyle = PS_SOLID;
 	if (m_relation == 2 || m_relation == 3) penStyle = PS_DASH;
-	CPen MyPen(penStyle, 1, RGB(0, 0, 0));
+	CPen MyPen(penStyle, penWidth, penColor);
 
 	dc.SelectObject(&MyPen);
 
