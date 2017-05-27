@@ -30,7 +30,7 @@ END_MESSAGE_MAP()
 CFinalQtDoc::CFinalQtDoc()
 {
 	// TODO: 여기에 일회성 생성 코드를 추가합니다.
-
+	
 }
 
 CFinalQtDoc::~CFinalQtDoc()
@@ -135,3 +135,84 @@ void CFinalQtDoc::Dump(CDumpContext& dc) const
 
 
 // CFinalQtDoc 명령
+
+
+
+
+/* 여기부터 내꺼 */
+#include "QtShape.h"
+#include "QtLine.h"
+#include "QtBox.h"
+using namespace std;
+void CFinalQtDoc::createBox(CString name, CString attribute, CString operation, CPoint pt)
+{
+
+}
+
+void CFinalQtDoc::createLine(CPoint pt, int lineType, int lineShape)
+{
+
+}
+
+void CFinalQtDoc::deleteObject(int key)
+{
+
+}
+
+int CFinalQtDoc::find(CPoint pt)
+{
+	return 0;
+
+}
+void CFinalQtDoc::redrawAllObj(const CClientDC& dc, std::vector<int> selected)
+{
+
+}
+int CFinalQtDoc::getShapeType(int key) 
+{
+	int ret = -1;
+	return ret;
+}
+vector<CString> CFinalQtDoc::getBoxInfo(int key)
+{
+	vector<CString> ret;
+	return ret;
+
+}
+int CFinalQtDoc::getRectangle(CPoint pt)
+{
+	return 0;
+
+}
+void CFinalQtDoc::moveObjects(CPoint pt, std::vector<int> key)
+{
+
+}
+void CFinalQtDoc::editBox(int key, const std::vector<CString>& infi)
+{
+
+}
+vector<int> CFinalQtDoc::selectArea(CPoint lu, CPoint rd)
+{
+	vector<int> ret;
+	return ret;
+}
+pair<int, int> CFinalQtDoc::isLinePoint(CPoint pt)
+{
+	pair<int, int> ret(0, 0);
+	return ret;
+}
+void CFinalQtDoc::moveLine(int key, CPoint vec, int flag)
+{
+
+}
+void CFinalQtDoc::save(CString filename)
+{
+
+}
+void CFinalQtDoc::load(CString filename)
+{
+
+}
+
+
