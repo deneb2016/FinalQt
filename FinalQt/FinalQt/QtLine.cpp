@@ -63,6 +63,7 @@ void QtLine::setRelEndPoint(QtBox* endBox, CPoint relEnd) {
 	if (endBox == NULL) {
 		m_pboxEnd = endBox;
 		m_relEnd = { -1,-1 };
+		return;
 	}
 	m_pboxEnd = endBox;
 	m_relEnd = relEnd;
@@ -82,6 +83,7 @@ void QtLine::setRelStartPoint(QtBox* startBox, CPoint relStart) {
 	if (startBox == NULL) {
 		m_pboxStart = startBox;
 		m_relStart = { -1,-1 };
+		return;
 	}
 	m_pboxStart = startBox;
 	m_relStart = relStart;
