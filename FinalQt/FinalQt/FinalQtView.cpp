@@ -19,7 +19,7 @@
 #define new DEBUG_NEW
 #endif
 
-enum {QT_DEFAULT, QT_CREATE_CLASS, QT_CREATE_RELATION, QT_MOVE_CLASS, QT_MOVE_RELATION, QT_MOUSELDOWN, QT_MOVE_SHAPE, QT_SELECT_MANY, QT_MOVE_ALLSHAPE, QT_SPACECLICK
+enum {QT_DEFAULT, QT_CREATE_CLASS, QT_CREATE_RELATION, QT_MOVE_CLASS, QT_MOVE_RELATION, QT_MOUSELDOWN, QT_MOVE_SHAPE, QT_SELECT_MANY, QT_MOVE_ALLSHAPE, QT_SPACECLICK, QT_CREATE_RELATION_CLICKED
 }qt_flgtyp;
 // CFinalQtView
 
@@ -234,7 +234,10 @@ void CFinalQtView::OnLButtonDown(UINT nFlags, CPoint point)
 			m_flag = QT_SPACECLICK;
 		return;		
 	case QT_CREATE_RELATION:
+		m_prevPt = m_ptS = point;
+		selectedObj_key.clear();
 		createLine(point, m_lineType, m_relationType);
+		m_flag = QT_CREATE_RELATION_CLICKED;
 		Invalidate();
 		break;
 	case QT_MOVE_CLASS:
@@ -264,6 +267,9 @@ void CFinalQtView::OnLButtonUp(UINT nFlags, CPoint point)
 	case QT_SPACECLICK:
 		selectedObj_key.clear();
 		Invalidate();
+	case QT_CREATE_RELATION_CLICKED:
+		m_flag = QT_DEFAULT;
+		break;
 	default :
 		m_flag = QT_DEFAULT;
 	}
@@ -282,7 +288,7 @@ void CFinalQtView::OnMouseMove(UINT nFlags, CPoint point)
 	switch (m_flag) {
 	case QT_DEFAULT:
 		return;
-	case QT_CREATE_RELATION:
+	case QT_CREATE_RELATION_CLICKED:
 		pDoc->moveLine(key_createRelation,point,TO);
 		Invalidate();
 		break;

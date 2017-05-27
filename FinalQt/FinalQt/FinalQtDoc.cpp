@@ -356,9 +356,11 @@ void CFinalQtDoc::moveLine(int key, CPoint pos, int flag)
 			if (ret.x != -1)
 			{
 				line->setRelStartPoint(box, ret);
-				break;
+				return;
 			}
 		}
+		line->setRelStartPoint(0, pos);
+		line->setAbsStartPoint(pos);
 	}
 	else if (flag == TO) {
 		for (int i = boxList.size() - 1; i >= 0; --i) {
@@ -367,9 +369,11 @@ void CFinalQtDoc::moveLine(int key, CPoint pos, int flag)
 			if (ret.x != -1)
 			{
 				line->setRelEndPoint(box, ret);
-				break;
+				return;
 			}
 		}
+		line->setRelEndPoint(0, pos);
+		line->setAbsEndPoint(pos);
 	}
 }
 void CFinalQtDoc::save(CString filename)
