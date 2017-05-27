@@ -102,18 +102,34 @@ void QtBox::setOperation(CString operation) {
 	m_operation = operation;
 }
 CPoint QtBox::edgeCheck(CPoint pos) {
-	CPoint nearest;
-	if (abs(pos.x - m_rd.x) <= 2) nearest.x = m_rd.x;
-	else if (abs(pos.x - m_lu.x) <= 2) nearest.x = m_lu.x;
-	else return{ -1,-1 };
+	CPoint nearest(-1,-1);
+	if (abs(pos.x - m_rd.x) <= PIX) nearest.x = m_rd.x;
+	else if (abs(pos.x - m_lu.x) <= PIX) nearest.x = m_lu.x;
 
-	if (abs(pos.y - m_rd.y) <= 2) nearest.y = m_rd.y;
-	else if (abs(pos.y - m_rd.y) <= 2) nearest.y = m_rd.y;
-	else return{ -1,-1 };
+	if ((nearest.x >= 0) && (m_rd.y <= pos.y && pos.y <= m_lu.y)) {
+		nearest.y = pos.y;
 
-	CPoint ret((int)(((double)pos.x*(double)100) / (double)nearest.x), (int)(((double)pos.y*(double)100) / (double)nearest.y));
+		CPoint p1 = m_lu - nearest;
+		CPoint p2 = m_rd - m_lu;
 
-	return ret;
+		CPoint ret = CPoint((double)p1.x / (double)p2.x * 100, (double)p1.y / (double)p2.y * 100);
+		return ret;
+	}
+	
+	if (abs(pos.y - m_rd.y) <= PIX) nearest.y = m_rd.y;
+	else if (abs(pos.y - m_lu.y) <= PIX) nearest.y = m_lu.y;
+
+	if ((nearest.y >= 0) && (m_rd.x <= pos.x && pos.x <= m_lu.x)) {
+		nearest.x = pos.x;
+
+		CPoint p1 = m_lu - nearest;
+		CPoint p2 = m_rd - m_lu;
+
+		CPoint ret = CPoint((double)p1.x / (double)p2.x * 100, (double)p1.y / (double)p2.y * 100);
+		return ret;
+	}
+	
+	return CPoint(-1,-1);
 }// 가장 가까운 edge점의 상대좌표 리턴, 없으면(-1, -1)
 
 void QtBox::save(CArchive& ar)
