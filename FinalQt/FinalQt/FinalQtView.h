@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "atltypes.h"
 
 
 class CFinalQtView : public CView
@@ -46,13 +47,19 @@ protected:
 public:
 	std::vector<int> selectedObj_key;
 	afx_msg void OnCreatbox();
-	CString strClassName;
-	CString strAttribute;
-	CString strOperation;
-	afx_msg void OnCreaterelation();
 	afx_msg void OnCreateline1();
 	afx_msg void OnCreateline2();
 	void createLine(CPoint pt, int lineType, int lineShape);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	int m_flag;
+	int m_relationType;
+	int m_lineType;
+	int key_createRelation;
+	CPoint m_ptS;
+	CPoint m_prevPt;
+	int m_lastSelectObj;
 };
 
 #ifndef _DEBUG  // FinalQtView.cpp의 디버그 버전
