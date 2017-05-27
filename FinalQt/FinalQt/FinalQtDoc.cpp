@@ -40,6 +40,16 @@ CFinalQtDoc::CFinalQtDoc()
 
 CFinalQtDoc::~CFinalQtDoc()
 {
+	for (QtBox* box : boxList) {
+		delete box;
+	}
+	for (QtLine* line : lineList) {
+		delete line;
+	}
+	boxList.clear();
+	lineList.clear();
+	boxHash.clear();
+	lineHash.clear();
 }
 
 BOOL CFinalQtDoc::OnNewDocument()
@@ -47,6 +57,17 @@ BOOL CFinalQtDoc::OnNewDocument()
 	if (!CDocument::OnNewDocument())
 		return FALSE;
 
+
+	for (QtBox* box : boxList) {
+		delete box;
+	}
+	for (QtLine* line : lineList) {
+		delete line;
+	}
+	boxList.clear();
+	lineList.clear();
+	boxHash.clear();
+	lineHash.clear();
 	// TODO: 여기에 재초기화 코드를 추가합니다.
 	// SDI 문서는 이 문서를 다시 사용합니다.
 
@@ -215,6 +236,7 @@ void CFinalQtDoc::deleteObject(int key)
 		{
 			target = *iter;
 			if (target->getKey() == key) {
+				delete target;
 				boxList.erase(iter);
 				break;
 			}
@@ -227,6 +249,7 @@ void CFinalQtDoc::deleteObject(int key)
 		{
 			target = *iter;
 			if (target->getKey() == key) {
+				delete target;
 				lineList.erase(iter);
 				break;
 			}
