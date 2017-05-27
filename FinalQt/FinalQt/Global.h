@@ -7,7 +7,7 @@
 #define TO 4
 #define INH 1
 #define DEP 3
-#define PIX 10
+#define PIX 5
 
 /*QtBox¿« m_stereotype*/
 #define ST_UTILITY 1 //±‚∫ª

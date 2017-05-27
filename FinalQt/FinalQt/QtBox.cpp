@@ -106,7 +106,7 @@ CPoint QtBox::edgeCheck(CPoint pos) {
 	if (abs(pos.x - m_rd.x) <= PIX) nearest.x = m_rd.x;
 	else if (abs(pos.x - m_lu.x) <= PIX) nearest.x = m_lu.x;
 
-	if ((nearest.x >= 0) && (m_rd.y <= pos.y && pos.y <= m_lu.y)) {
+	if ((nearest.x >= 0) && (m_lu.y <= pos.y && pos.y <= m_rd.y)) {
 		nearest.y = pos.y;
 
 		CPoint p1 = nearest - m_lu;

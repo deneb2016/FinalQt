@@ -32,6 +32,7 @@ QtLine::QtLine(QtBox* startBox, CPoint relStart, int relation, bool diagonal) {
 		m_relStart = relStart;
 		m_relEnd = { -1,-1 };
 		m_absStart = relativeToAbsolute(startBox->getLu(), startBox->getRd(), relStart);
+		m_absEnd = m_absStart;
 	}
 	m_relation = relation;
 	m_diagonal = diagonal;
@@ -103,13 +104,18 @@ void QtLine::redraw(CClientDC & dc, bool selected) {
 	dc.SelectObject(&MyPen);
 
 	//'화면상의 절대좌표'구하기
+	if (m_pboxEnd != NULL) {
+		m_absEnd = relativeToAbsolute(m_pboxEnd->getLu(), m_pboxEnd->getRd(), m_relEnd);
+	}
+	if (m_pboxStart != NULL) {
+		m_absStart = relativeToAbsolute(m_pboxStart->getLu(), m_pboxStart->getRd(), m_relStart);
+	}
 	CPoint posEnd = m_absEnd;
 	CPoint posStart = m_absStart;
-
 	/*1. 선그리기*/
 	if (m_diagonal == true) {
-		dc.MoveTo(posStart);
-		dc.LineTo(posEnd);
+		dc.MoveTo(m_absStart);
+		dc.LineTo(m_absEnd);
 	}
 	else {
 		//저절로 꺾이는
