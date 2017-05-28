@@ -25,4 +25,5 @@ public:
 	CComboBox m_ComboIndex;
 	int cIndex;
 	virtual BOOL OnInitDialog();
+	afx_msg void OnCbnSelchangeCombo1();
 };

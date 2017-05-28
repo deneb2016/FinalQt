@@ -472,7 +472,26 @@ void CFinalQtView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			Invalidate();
 		}
 		break;
+	case VK_F2: //บนป็
+	{
+		CFinalQtDoc* pDoc = GetDocument();
+		ASSERT_VALID(pDoc);
+		if (!pDoc)
+			return;
+		pDoc->copyObjects(selectedObj_key);
+		break;
 	}
+	case VK_F3: {
+		CFinalQtDoc* pDoc = GetDocument();
+		ASSERT_VALID(pDoc);
+		if (!pDoc)
+			return;
+		pDoc->pasteObjects();
+		Invalidate();
+		break;
+	}
+	}
+
 	CView::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
@@ -535,3 +554,4 @@ void CFinalQtView::OnChangeshape()
 		}
 	}
 }
+

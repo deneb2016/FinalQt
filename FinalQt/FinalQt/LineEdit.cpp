@@ -29,6 +29,7 @@ void CLineEdit::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CLineEdit, CDialog)
+	ON_CBN_SELCHANGE(IDC_COMBO1, &CLineEdit::OnCbnSelchangeCombo1)
 END_MESSAGE_MAP()
 
 
@@ -50,4 +51,11 @@ BOOL CLineEdit::OnInitDialog()
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
+}
+
+
+void CLineEdit::OnCbnSelchangeCombo1()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	cIndex = m_ComboIndex.GetCurSel();
 }

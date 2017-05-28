@@ -236,6 +236,15 @@ void CFinalQtDoc::deleteObject(int key)
 		{
 			target = *iter;
 			if (target->getKey() == key) {
+				for (int i = 0; i < lineList.size(); ++i) {
+					QtLine* line = lineList[i];
+					if (line->m_pboxStart == target) {
+						line->m_pboxStart = 0;
+					}
+					if (line->m_pboxEnd == target) {
+						line->m_pboxEnd = 0;
+					}
+				}
 				delete target;
 				boxList.erase(iter);
 				break;
@@ -425,11 +434,10 @@ std::pair<int, int> CFinalQtDoc::getLineInfo(int key)
 }
 void CFinalQtDoc::editLine(int key, int type, int shape) //라인의 속성을0 바꾼다.
 {
-	pair<int, int> ret(-1, -1);
 	if (lineHash.find(key) != lineHash.end()) {
 		QtLine* line = lineHash[key];
-		ret.first = line->m_relation;
-		ret.second = line->m_diagonal;
+		line->m_relation = type;
+		line->m_diagonal = shape;
 	}
 }
 
@@ -469,6 +477,7 @@ void CFinalQtDoc::copyObjects(vector<int> keys)
 
 			QtLine* newLine = new QtLine(start, line->m_relStart, line->m_relation, line->m_diagonal);
 			newLine->setRelEndPoint(end, line->m_relEnd);
+			lineCopy.push_back(newLine);
 		}
 	}
 	

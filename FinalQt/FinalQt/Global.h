@@ -5,8 +5,6 @@
 #define LINE 2
 #define FROM 3
 #define TO 4
-#define INH 1
-#define DEP 3
 #define PIX 5
 
 /*QtBox¿« m_stereotype*/
